@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-plugin-starter",
-	"name": "Obsidian Plugin Starter",
-	"version": "1.0.0",
+	"id": "albus-figure-manager",
+	"name": "Figure Manager",
+	"version": "0.1.0",
 	"minAppVersion": "1.8.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"description": "A powerful image management plugin for Obsidian with reference checking, searching, and file operations.",
 	"author": "RavenHogWarts",
 	"authorUrl": "https://github.com/RavenHogWarts",
 	"fundingUrl": {

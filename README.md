@@ -1,10 +1,19 @@
-English | [中文](https://github.com/RavenHogWarts/obsidian-plugin-starter/blob/master/README-zh.md)
+English | [中文](https://github.com/RavenHogWarts/albus-figure-manager/blob/master/README-zh.md)
 
-# Obsidian Sample Plugin
-This is a sample plugin for Obsidian (https://obsidian.md).
+# Albus Figure Manager
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+A powerful image management plugin for Obsidian that helps you organize, search, and manage your images with advanced features like reference checking, bulk operations, and AGX file support.
+
+## ✨ Features
+
+- 🖼️ **Visual Grid View** - Browse all your images in a beautiful grid layout
+- 🔍 **Reference Checking** - Find out which notes reference your images
+- 🗑️ **Unused Image Detection** - Easily identify and clean up unreferenced images
+- 🔎 **Advanced Search** - Search by filename or path
+- 📁 **File Operations** - Open, rename, and delete images with ease
+- 🎨 **AGX File Support** - Special handling for AGX/SVG file pairs
+- ⚡ **Performance Optimized** - Smart caching for fast operations
+- 🎯 **Keyboard Shortcuts** - Quick access through command palette
 
 [![GitHub stars](https://img.shields.io/github/stars/RavenHogWarts/obsidian-plugin-starter?style=flat&label=Stars)](https://github.com/RavenHogWarts/obsidian-plugin-starter/stargazers)
 [![Total Downloads](https://img.shields.io/github/downloads/RavenHogWarts/obsidian-plugin-starter/total?style=flat&label=Total%20Downloads)](https://github.com/RavenHogWarts/obsidian-plugin-starter/releases)

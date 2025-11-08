@@ -1,13 +1,20 @@
-import SettingsStore from "@src/settings/SettingsStore";
+import useSettingsStore from "./useSettingsStore";
 import { IPluginSettings } from "@src/types/types";
 import { useSyncExternalStore } from "react";
 
-export default function usePluginSettings(
-	settingsStore: SettingsStore
-): IPluginSettings {
-	const settings = useSyncExternalStore(
+export function usePluginSettings() {
+	const settingsStore = useSettingsStore();
+	const pluginSettings = useSyncExternalStore(
 		settingsStore.store.subscribe,
 		settingsStore.store.getSnapshot
 	);
-	return settings;
+
+	const updatePluginSettings = (newSettings: IPluginSettings) => {
+		settingsStore.updateSettings(newSettings);
+	};
+
+	return {
+		pluginSettings,
+		updatePluginSettings,
+	};
 }

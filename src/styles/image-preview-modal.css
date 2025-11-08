@@ -1,0 +1,291 @@
+/**
+ * 图片预览Modal样式
+ */
+
+/* 预览弹窗 */
+.image-manager-preview-modal {
+	background: var(--background-primary);
+	border-radius: var(--radius-m);
+	width: 80%;
+	height: 80%;
+	max-width: 1400px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.image-manager-preview-toolbar {
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.image-manager-preview-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-normal);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* 预览弹窗中的格式标签 */
+.image-manager-format-tag {
+	font-size: 10px;
+	padding: 2px 6px;
+	border-radius: var(--radius-s);
+	font-weight: 600;
+	color: white;
+}
+
+.image-manager-agx-format-tag {
+	background: var(--interactive-accent);
+}
+
+.image-manager-other-format-tag {
+	background: var(--text-muted);
+}
+
+.image-manager-reference-tag {
+	background: rgba(var(--interactive-accent-rgb), 0.1);
+	color: var(--interactive-accent);
+	font-size: 10px;
+	padding: 2px 6px;
+	border-radius: var(--radius-s);
+	font-weight: 600;
+}
+
+.image-manager-preview-controls {
+	display: flex;
+	gap: 8px;
+}
+
+.image-manager-close-button {
+	padding: 8px 12px;
+	border: none;
+	border-radius: var(--radius-s);
+	background: var(--background-modifier-border);
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	font-size: 14px;
+}
+
+.image-manager-close-button:hover {
+	background: var(--interactive-danger);
+	color: white;
+}
+
+/* 预览内容区域 - 左右布局 */
+.image-manager-preview-content {
+	flex: 1;
+	display: flex;
+	overflow: hidden;
+	min-height: 0;
+}
+
+/* 左侧图片预览区域 */
+.image-manager-preview-image-section {
+	flex: 3;
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid var(--background-modifier-border);
+	overflow: hidden;
+}
+
+.image-manager-preview-image-container {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	overflow: auto;
+	background: var(--background-secondary);
+}
+
+.image-manager-preview-image {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	border-radius: var(--radius-s);
+}
+
+/* 右侧信息区域 */
+.image-manager-preview-info-section {
+	flex: 2;
+	display: flex;
+	flex-direction: column;
+	min-width: 300px;
+	max-width: 400px;
+	overflow: hidden;
+}
+
+/* 详细信息区域 */
+.image-manager-detail-section {
+	padding: 20px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	flex-shrink: 0;
+}
+
+.image-manager-detail-section h4 {
+	margin: 0 0 16px 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-normal);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.image-manager-detail-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.image-manager-detail-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.image-manager-detail-label {
+	color: var(--text-muted);
+	font-weight: 500;
+	min-width: 80px;
+	flex-shrink: 0;
+}
+
+.image-manager-detail-value {
+	color: var(--text-normal);
+	text-align: right;
+	word-break: break-word;
+	flex: 1;
+}
+
+/* 引用文档栏 */
+.image-manager-backlinks-section {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 20px;
+}
+
+.image-manager-backlinks-section h4 {
+	margin: 0 0 12px 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.image-manager-backlinks-list {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	overflow-y: auto;
+}
+
+.image-manager-backlink-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	padding: 8px;
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	font-size: 12px;
+}
+
+.image-manager-backlink-item:hover {
+	background: var(--background-modifier-hover);
+}
+
+.image-manager-backlink-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.image-manager-backlink-name {
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.image-manager-backlink-path {
+	color: var(--text-faint);
+	font-size: 10px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.image-manager-backlink-type {
+	color: var(--interactive-accent);
+	font-size: 10px;
+	font-weight: 600;
+	background: rgba(var(--interactive-accent-rgb), 0.1);
+	padding: 1px 4px;
+	border-radius: 4px;
+	align-self: flex-start;
+}
+
+.image-manager-no-backlinks {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 12px;
+	padding: 16px;
+}
+
+.image-manager-backlink-hint {
+	font-size: 11px;
+	opacity: 0.7;
+	margin-top: 8px;
+	line-height: 1.4;
+}
+
+.image-manager-backlink-hint code {
+	background: rgba(var(--interactive-accent-rgb), 0.1);
+	padding: 2px 4px;
+	border-radius: 4px;
+	font-family: monospace;
+	margin: 1px 0;
+	display: inline-block;
+	color: var(--interactive-accent);
+	font-weight: 500;
+	font-size: 10px;
+}
+
+/* 滚动条样式 */
+.image-manager-backlinks-list::-webkit-scrollbar {
+	width: 8px;
+}
+
+.image-manager-backlinks-list::-webkit-scrollbar-track {
+	background: var(--background-secondary);
+	border-radius: 4px;
+}
+
+.image-manager-backlinks-list::-webkit-scrollbar-thumb {
+	background: var(--background-modifier-border);
+	border-radius: 4px;
+}
+
+.image-manager-backlinks-list::-webkit-scrollbar-thumb:hover {
+	background: var(--interactive-accent);
+}

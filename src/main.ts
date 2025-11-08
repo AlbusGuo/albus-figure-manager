@@ -1,104 +1,78 @@
-import "@styles/styles";
-import { App, Editor, MarkdownView, Modal, Notice, Plugin } from "obsidian";
+import { Plugin, WorkspaceLeaf } from "obsidian";
 import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
 import { IPluginSettings } from "./types/types";
+import { ImageManagerView, IMAGE_MANAGER_VIEW_TYPE } from "./views/ImageManagerView";
 
-export default class CPlugin extends Plugin {
+export default class AlbusFigureManagerPlugin extends Plugin {
 	settings: IPluginSettings;
 	readonly settingsStore = new SettingsStore(this);
 
 	async onload() {
 		await this.settingsStore.loadSettings();
 
-		// This creates an icon in the left ribbon.
+		// 注册视图
+		this.registerView(
+			IMAGE_MANAGER_VIEW_TYPE,
+			(leaf) => new ImageManagerView(leaf, this.settings.imageManager || {})
+		);
+
+		// 添加功能区图标 - 打开图片管理器
 		const ribbonIconEl = this.addRibbonIcon(
-			"dice",
-			"Sample Plugin",
+			"image",
+			"图片管理器",
 			(evt: MouseEvent) => {
-				// Called when the user clicks the icon.
-				new Notice("This is a notice!");
+				this.openImageManager();
 			}
 		);
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass("my-plugin-ribbon-class");
+		ribbonIconEl.addClass("albus-figure-manager-ribbon-icon");
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText("Status Bar Text");
-
-		// This adds a simple command that can be triggered anywhere
+		// 添加命令 - 打开图片管理器
 		this.addCommand({
-			id: "open-sample-modal-simple",
-			name: "Open sample modal (simple)",
+			id: "open-image-manager",
+			name: "打开图片管理器",
 			callback: () => {
-				new SampleModal(this.app).open();
-			},
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: "sample-editor-command",
-			name: "Sample editor command",
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection("Sample Editor Command");
-			},
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: "open-sample-modal-complex",
-			name: "Open sample modal (complex)",
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView =
-					this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
+				this.openImageManager();
 			},
 		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
+		// 添加设置选项卡
 		this.addSettingTab(new PluginSettingTab(this));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, "click", (evt: MouseEvent) => {
-			console.log("click", evt);
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(
-			window.setInterval(() => console.log("setInterval"), 5 * 60 * 1000)
-		);
 	}
 
-	onunload() {}
+	/**
+	 * 打开图片管理器
+	 */
+	async openImageManager(): Promise<void> {
+		const { workspace } = this.app;
+
+		// 检查是否已有打开的视图
+		let leaf: WorkspaceLeaf | null = null;
+		const leaves = workspace.getLeavesOfType(IMAGE_MANAGER_VIEW_TYPE);
+
+		if (leaves.length > 0) {
+			// 如果已存在，激活它
+			leaf = leaves[0];
+			workspace.revealLeaf(leaf);
+		} else {
+			// 在中间窗口创建新的视图（而非侧边栏）
+			leaf = workspace.getLeaf('tab');
+			if (leaf) {
+				await leaf.setViewState({
+					type: IMAGE_MANAGER_VIEW_TYPE,
+					active: true,
+				});
+				workspace.revealLeaf(leaf);
+			}
+		}
+	}
+
+	onunload() {
+		// 清理工作
+		this.app.workspace.detachLeavesOfType(IMAGE_MANAGER_VIEW_TYPE);
+	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText("Woah!");
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
 	}
 }
