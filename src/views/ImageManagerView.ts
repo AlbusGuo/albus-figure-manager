@@ -639,6 +639,8 @@ export class ImageManagerView extends ItemView {
 	 * 刷新视图
 	 */
 	async refresh(): Promise<void> {
+		// 清除引用缓存以确保重新检查
+		this.referenceChecker.clearCache();
 		await this.loadImages();
 	}
 
