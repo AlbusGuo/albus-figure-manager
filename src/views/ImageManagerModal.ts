@@ -52,7 +52,8 @@ export class ImageManagerModal extends Modal {
 	constructor(app: App, settings: ImageManagerSettings) {
 		super(app);
 		this.settings = settings;
-		this.selectedFolder = settings.folderPath || "";
+		// 优先使用上次选择的文件夹，否则使用默认文件夹
+		this.selectedFolder = settings.lastSelectedFolder ?? settings.folderPath ?? "";
 		this.showUnreferencedOnly = settings.defaultFilterUnreferenced || false;
 
 		// Initialize services
@@ -235,6 +236,31 @@ export class ImageManagerModal extends Modal {
 	private async handleFolderChange(folder: string): Promise<void> {
 		this.selectedFolder = folder;
 		await this.loadImages();
+		
+		// 保存当前选择的文件夹
+		await this.saveLastSelectedFolder();
+	}
+
+	/**
+	 * 保存上次选择的文件夹
+	 */
+	private async saveLastSelectedFolder(): Promise<void> {
+		try {
+			// 直接使用 Obsidian 的数据持久化 API
+			const plugin = (this.app as any).plugins?.plugins?.["albus-figure-manager"];
+			if (plugin) {
+				const data = await plugin.loadData() || {};
+				if (!data.imageManager) {
+					data.imageManager = {};
+				}
+				data.imageManager.lastSelectedFolder = this.selectedFolder;
+				await plugin.saveData(data);
+				// 更新内存中的设置
+				plugin.settings.imageManager.lastSelectedFolder = this.selectedFolder;
+			}
+		} catch (error) {
+			console.error("保存文件夹选择失败:", error);
+		}
 	}
 
 	/**

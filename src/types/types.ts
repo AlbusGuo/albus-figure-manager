@@ -7,6 +7,7 @@ export interface IPluginSettings {
 export const DEFAULT_SETTINGS: IPluginSettings = {
 	imageManager: {
 		folderPath: "",
+		lastSelectedFolder: "",
 		showFileSize: true,
 		showModifiedTime: true,
 		defaultFilterUnreferenced: false,

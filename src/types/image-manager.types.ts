@@ -74,6 +74,8 @@ export type FileOpenMode = "internal" | "external";
 export interface ImageManagerSettings {
 	/** 默认文件夹路径 */
 	folderPath?: string;
+	/** 上次选择的文件夹路径（自动记录） */
+	lastSelectedFolder?: string;
 	/** 显示文件大小 */
 	showFileSize?: boolean;
 	/** 显示修改时间 */
