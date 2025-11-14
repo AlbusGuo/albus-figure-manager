@@ -110,21 +110,22 @@ export class ImagePreviewModal extends Modal {
 			cls: "image-manager-preview-content",
 		});
 
-		// 左侧图片区域
+		// 左侧：图片和详细信息
 		this.renderImageSection(content);
 
-		// 右侧信息区域
+		// 右侧：引用列表
 		this.renderInfoSection(content);
 	}
 
 	/**
-	 * 渲染图片区域
+	 * 渲染图片区域（包含详细信息）
 	 */
 	private renderImageSection(container: HTMLElement): void {
 		const imageSection = container.createDiv({
 			cls: "image-manager-preview-image-section",
 		});
 
+		// 图片容器
 		const imageContainer = imageSection.createDiv({
 			cls: "image-manager-preview-image-container",
 		});
@@ -168,20 +169,20 @@ export class ImagePreviewModal extends Modal {
 				img.style.cursor = "zoom-in";
 			}
 		});
+
+		// 详细信息放在图片下方
+		this.renderDetails(imageSection);
 	}
 
 	/**
-	 * 渲染信息区域
+	 * 渲染信息区域（仅引用列表）
 	 */
 	private renderInfoSection(container: HTMLElement): void {
 		const infoSection = container.createDiv({
 			cls: "image-manager-preview-info-section",
 		});
 
-		// 详细信息
-		this.renderDetails(infoSection);
-
-		// 引用文档
+		// 只渲染引用文档
 		this.renderBacklinks(infoSection);
 	}
 

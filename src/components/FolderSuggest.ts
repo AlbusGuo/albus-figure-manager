@@ -101,7 +101,7 @@ export class FolderSuggest {
 
 		// 创建建议框
 		this.suggestEl = document.createElement("div");
-		this.suggestEl.addClass("suggestion-container");
+		this.suggestEl.addClass("image-manager-suggestion-container");
 		this.suggestEl.style.position = "fixed";  // 改为 fixed 定位
 		this.suggestEl.style.zIndex = "10000";  // 提高 z-index
 		this.suggestEl.style.background = "var(--background-primary)";
@@ -119,7 +119,7 @@ export class FolderSuggest {
 
 		// 添加建议项
 		this.folders.forEach((folder, index) => {
-			const item = this.suggestEl!.createDiv("suggestion-item");
+			const item = this.suggestEl!.createDiv("image-manager-suggestion-item");
 			item.style.padding = "8px 12px";
 			item.style.cursor = "pointer";
 			item.style.userSelect = "none";  // 防止文本选择
