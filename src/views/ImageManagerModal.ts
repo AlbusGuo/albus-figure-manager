@@ -78,13 +78,16 @@ export class ImageManagerModal extends Modal {
 	private setupLayout(): void {
 		const { contentEl } = this;
 
-		// 头部
+		// 头部（带文件夹选择器）
 		this.headerContainer = contentEl.createDiv();
-		this.headerComponent = new HeaderComponent(this.headerContainer);
+		this.headerComponent = new HeaderComponent(this.headerContainer, true, this.app);
 		this.headerComponent.setEventHandlers({
 			onCheckReferences: () => this.checkReferences(),
 			onToggleUnreferencedFilter: () => this.toggleUnreferencedFilter(),
+			onFolderChange: (folder) => this.handleFolderChange(folder),
 		});
+		// 设置初始文件夹值
+		this.headerComponent.setFolderValue(this.selectedFolder);
 
 		// 搜索和排序栏
 		this.searchContainer = contentEl.createDiv();
@@ -225,6 +228,14 @@ export class ImageManagerModal extends Modal {
 	}
 
 	/**
+	 * 处理文件夹变化
+	 */
+	private async handleFolderChange(folder: string): Promise<void> {
+		this.selectedFolder = folder;
+		await this.loadImages();
+	}
+
+	/**
 	 * 切换未引用筛选
 	 */
 	private toggleUnreferencedFilter(): void {
@@ -323,6 +334,9 @@ export class ImageManagerModal extends Modal {
 }
 
 onClose(): void {
+	if (this.headerComponent) {
+		this.headerComponent.destroy();
+	}
 	const { contentEl } = this;
 	contentEl.empty();
 }

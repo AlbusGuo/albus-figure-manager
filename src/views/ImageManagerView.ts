@@ -15,6 +15,7 @@ import { FileOperationService } from "../services/FileOperationService";
 import { ImagePreviewModal } from "./ImagePreviewModal";
 import { RenameModal } from "./RenameModal";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
+import { FolderSuggest } from "../components/FolderSuggest";
 
 export const IMAGE_MANAGER_VIEW_TYPE = "image-manager-view";
 
@@ -29,6 +30,7 @@ export class ImageManagerView extends ItemView {
 	private showUnreferencedOnly = false;
 	private isLoading = false;
 	private isCheckingReferences = false;
+	private folderSuggest: FolderSuggest | null = null;
 
 	// Services
 	private imageLoader: ImageLoaderService;
@@ -117,40 +119,120 @@ export class ImageManagerView extends ItemView {
 	private renderHeader(): void {
 		this.headerContainer.empty();
 
-		// 统计信息和按钮行
-		const statsActionsRow = this.headerContainer.createDiv("image-manager-stats-actions-row");
+		// 单行布局：统计 + 按钮
+		const headerRow = this.headerContainer.createDiv("image-manager-header-row");
+
+		// 左侧：文件夹按钮 + 统计信息
+		const leftSection = headerRow.createDiv("image-manager-header-left");
+
+		// 文件夹选择按钮
+		const folderBtn = leftSection.createEl("button", {
+			cls: "image-manager-folder-button",
+		});
+		const folderIcon = folderBtn.createSpan({ cls: "image-manager-folder-icon" });
+		setIcon(folderIcon, "folder");
+		const folderText = folderBtn.createSpan({ 
+			text: this.selectedFolder || "所有图片",
+			cls: "image-manager-folder-text"
+		});
+
+		// 点击按钮显示输入框
+		folderBtn.onclick = () => {
+			this.showFolderInput(folderBtn);
+		};
 
 		// 统计信息
-		const statsEl = statsActionsRow.createDiv("image-manager-stats");
-		statsEl.createSpan({
-			text: `当前: ${this.selectedFolder || "全部图片"}`,
-		});
-		statsEl.createSpan({
-			text: ` | 共 ${this.images.length} 张`,
-		});
-		if (this.showUnreferencedOnly) {
-			statsEl.createSpan({
-				text: ` | 过滤: ${this.filteredImages.length} 张`,
-			});
-		}
+		const statsEl = leftSection.createDiv("image-manager-stats");
+		const statsText = `共 ${this.images.length} 张`;
+		const filteredText = this.showUnreferencedOnly ? ` | 过滤: ${this.filteredImages.length} 张` : "";
+		statsEl.setText(statsText + filteredText);
 
-		// 操作按钮区域
-		const actionsEl = statsActionsRow.createDiv("image-manager-reference-actions");
+		// 右侧：操作按钮
+		const rightSection = headerRow.createDiv("image-manager-header-right");
 
 		// 引用检查状态提示
 		if (this.isCheckingReferences) {
-			const statusEl = actionsEl.createEl("span", {
+			const statusEl = rightSection.createEl("span", {
 				text: "正在检查引用...",
 				cls: "image-manager-checking-status",
 			});
 		}
 
+		// 筛选按钮
+		const filterBtn = rightSection.createEl("button", {
+			text: "仅未引用",
+			cls: this.showUnreferencedOnly
+				? "image-manager-filter-button image-manager-filter-button-active"
+				: "image-manager-filter-button",
+		});
+		filterBtn.onclick = () => {
+			this.showUnreferencedOnly = !this.showUnreferencedOnly;
+			this.applyFilters();
+			this.renderHeader();
+			this.renderGrid();
+		};
+
 		// 刷新按钮
-		const refreshBtn = actionsEl.createEl("button", {
+		const refreshBtn = rightSection.createEl("button", {
 			text: "刷新",
 			cls: "image-manager-check-refs-button",
 		});
 		refreshBtn.onclick = () => this.refresh();
+	}
+
+	/**
+	 * 显示文件夹输入框
+	 */
+	private showFolderInput(buttonEl: HTMLElement): void {
+		// 创建输入框容器
+		const inputContainer = buttonEl.parentElement!.createDiv("image-manager-folder-input-container");
+		
+		const folderInput = inputContainer.createEl("input", {
+			type: "text",
+			placeholder: "输入文件夹路径...",
+			value: this.selectedFolder,
+			cls: "image-manager-folder-input-inline",
+		});
+
+		// 隐藏按钮，显示输入框
+		buttonEl.style.display = "none";
+
+		// 创建FolderSuggest
+		if (this.folderSuggest) {
+			this.folderSuggest.destroy();
+		}
+		this.folderSuggest = new FolderSuggest(this.app, folderInput, (value) => {
+			this.selectedFolder = value;
+			this.refresh();
+		});
+
+		// 输入事件
+		folderInput.addEventListener("input", () => {
+			this.selectedFolder = folderInput.value;
+		});
+
+		// 回车键确认
+		folderInput.addEventListener("keydown", async (e) => {
+			if (e.key === "Enter") {
+				await this.refresh();
+				inputContainer.remove();
+				buttonEl.style.display = "";
+			} else if (e.key === "Escape") {
+				inputContainer.remove();
+				buttonEl.style.display = "";
+			}
+		});
+
+		// 失焦时隐藏输入框
+		folderInput.addEventListener("blur", () => {
+			setTimeout(() => {
+				inputContainer.remove();
+				buttonEl.style.display = "";
+			}, 200);
+		});
+
+		// 自动聚焦
+		setTimeout(() => folderInput.focus(), 0);
 	}
 
 	/**
@@ -214,21 +296,6 @@ export class ImageManagerView extends ItemView {
 			this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
 			this.updateSortOrderButton(sortOrderBtn);
 			this.applyFilters();
-			this.renderGrid();
-		};
-
-		// 过滤器按钮
-		const filterBtn = sortControlsEl.createEl("button", {
-			text: "仅显示未引用",
-			cls: this.showUnreferencedOnly
-				? "image-manager-filter-button image-manager-filter-button-active"
-				: "image-manager-filter-button",
-		});
-		filterBtn.onclick = () => {
-			this.showUnreferencedOnly = !this.showUnreferencedOnly;
-			this.applyFilters();
-			this.renderHeader();
-			this.renderSearchBar();
 			this.renderGrid();
 		};
 	}
@@ -582,5 +649,16 @@ export class ImageManagerView extends ItemView {
 		if (bytes < 1024) return bytes + " B";
 		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
 		return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+	}
+
+	/**
+	 * 关闭视图时清理资源
+	 */
+	onunload(): void {
+		// 清理FolderSuggest
+		if (this.folderSuggest) {
+			this.folderSuggest.destroy();
+			this.folderSuggest = null;
+		}
 	}
 }

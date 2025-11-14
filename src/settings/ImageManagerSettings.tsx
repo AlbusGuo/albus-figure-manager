@@ -67,33 +67,10 @@ export function ImageManagerSettings() {
 
 	return (
 		<>
-			<SettingTitle>路径设置</SettingTitle>
-			<div style={{ marginBottom: "1rem" }}>
-				<div style={{ marginBottom: "8px" }}>
-					<label style={{ 
-						fontSize: "14px", 
-						fontWeight: 500,
-						color: "var(--text-normal)",
-						display: "block",
-						marginBottom: "4px"
-					}}>
-						默认文件夹路径
-					</label>
-					<div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>
-						设置图片管理器的默认文件夹路径，留空则显示所有图片
-					</div>
-				</div>
-				<FolderInput
-					app={app}
-					value={imageManager.folderPath || ""}
-					onChange={(value) => updateImageManagerSettings({ folderPath: value })}
-					placeholder="留空显示所有图片"
-				/>
-			</div>
-
-			<SettingDivider />
-
 			<SettingTitle>显示选项</SettingTitle>
+			<SettingDescription>
+				文件夹选择器已移至图片管理器界面顶部，便于快速切换路径
+			</SettingDescription>
 
 			<SettingSwitch
 				label="显示文件大小"
