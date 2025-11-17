@@ -1,0 +1,67 @@
+/**
+ * 删除确认模态框样式
+ */
+
+.modal.delete-confirm-modal .modal-content {
+	width: 400px;
+	max-width: 90vw;
+}
+
+.delete-confirm-modal-body {
+	margin-bottom: 20px;
+}
+
+.delete-confirm-modal-message {
+	color: var(--text-normal);
+	font-size: 14px;
+	line-height: 1.6;
+	margin-bottom: 12px;
+}
+
+.delete-confirm-modal-extra {
+	color: var(--text-error);
+	font-size: 13px;
+	line-height: 1.5;
+	background: transparent;
+	padding: 0;
+	margin-top: 8px;
+}
+
+.delete-confirm-modal-actions {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.delete-confirm-cancel-button,
+.delete-confirm-delete-button {
+	padding: 6px 16px;
+	border-radius: var(--button-radius);
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s ease;
+	font-weight: 500;
+}
+
+.delete-confirm-cancel-button {
+	background: transparent;
+	color: var(--text-muted);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.delete-confirm-cancel-button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	border-color: var(--text-muted);
+}
+
+.delete-confirm-delete-button {
+	background: var(--text-error);
+	color: var(--text-on-accent);
+	border: 1px solid var(--text-error);
+}
+
+.delete-confirm-delete-button:hover {
+	background: var(--color-red);
+	border-color: var(--color-red);
+}

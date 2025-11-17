@@ -3,6 +3,7 @@ import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
 import { IPluginSettings } from "./types/types";
 import { ImageManagerView, IMAGE_MANAGER_VIEW_TYPE } from "./views/ImageManagerView";
+import "./styles";
 
 export default class AlbusFigureManagerPlugin extends Plugin {
 	settings: IPluginSettings;

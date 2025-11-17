@@ -1,0 +1,377 @@
+/**
+ * 额外的组件样式 - 头部、文件夹选择、文件打开配置等
+ */
+
+/* ==================== 头部扩展样式 ==================== */
+.image-manager-header-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+}
+
+.image-manager-header-left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+	min-width: 0;
+}
+
+.image-manager-header-right {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+/* 批量删除按钮容器 - 固定宽度防止布局跳动 */
+.image-manager-batch-delete-container {
+	width: 88px;
+	flex-shrink: 0;
+}
+
+.image-manager-checking-status {
+	font-size: 12px;
+	color: var(--text-muted);
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0%, 100% { opacity: 0.6; }
+	50% { opacity: 1; }
+}
+
+/* ==================== 文件夹选择按钮 ==================== */
+.image-manager-folder-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	background: transparent;
+	color: var(--text-muted);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--button-radius);
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s ease;
+	flex-shrink: 0;
+	max-width: 300px;
+}
+
+.image-manager-folder-button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	border-color: var(--text-muted);
+}
+
+.image-manager-folder-icon {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.image-manager-folder-icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+.image-manager-folder-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 内联文件夹输入 */
+.image-manager-folder-input-container {
+	display: inline-block;
+	position: relative;
+	min-width: 200px;
+}
+
+.image-manager-folder-input-inline {
+	width: 100%;
+	padding: 4px 10px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	border: 1px solid var(--interactive-accent);
+	border-radius: var(--input-radius);
+	font-size: 13px;
+	outline: none;
+}
+
+.image-manager-folder-input-inline:focus {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px var(--background-modifier-border);
+}
+
+/* 文件夹建议列表 */
+.image-manager-suggestion-container {
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	box-shadow: var(--shadow-s);
+}
+
+.image-manager-suggestion-item {
+	padding: 6px 12px;
+	cursor: pointer;
+	font-size: 13px;
+	color: var(--text-normal);
+}
+
+.image-manager-suggestion-item.is-selected {
+	background: var(--background-modifier-hover);
+}
+
+.image-manager-suggestion-item:hover {
+	background: var(--background-modifier-hover);
+}
+
+/* ==================== 搜索栏扩展 ==================== */
+.image-manager-search {
+	padding: 10px 16px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	flex-shrink: 0;
+}
+
+.image-manager-search-input::placeholder {
+	color: var(--text-faint);
+}
+
+.image-manager-sort-order-button {
+	padding: 4px 8px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--button-radius);
+	background: var(--background-primary);
+	color: var(--text-muted);
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 28px;
+}
+
+.image-manager-sort-order-button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	border-color: var(--text-muted);
+}
+
+/* ==================== 网格扩展样式 ==================== */
+.image-manager-load-more {
+	padding: 16px;
+	text-align: center;
+	color: var(--text-faint);
+	font-size: 12px;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.image-manager-preview-error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 40px 20px;
+	text-align: center;
+}
+
+.image-manager-preview-error-icon {
+	font-size: 48px;
+	opacity: 0.5;
+}
+
+.image-manager-preview-error-text {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.image-manager-preview-error-hint {
+	font-size: 13px;
+	color: var(--text-faint);
+	max-width: 300px;
+	line-height: 1.5;
+}
+
+.image-manager-reference-badge-has-refs {
+	background: rgba(34, 197, 94, 0.9);
+}
+
+.image-manager-meta-item {
+	white-space: nowrap;
+}
+
+.image-manager-meta-size {
+	color: var(--text-faint);
+}
+
+.image-manager-meta-date {
+	color: var(--text-faint);
+}
+
+/* ==================== 预览模态框扩展 ==================== */
+.image-manager-preview-title > span:first-child {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* ==================== 滚动条样式 ==================== */
+.image-manager-grid-panel::-webkit-scrollbar,
+.image-manager-backlinks-list::-webkit-scrollbar,
+.image-manager-preview-image-container::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+.image-manager-grid-panel::-webkit-scrollbar-track,
+.image-manager-backlinks-list::-webkit-scrollbar-track,
+.image-manager-preview-image-container::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.image-manager-grid-panel::-webkit-scrollbar-thumb,
+.image-manager-backlinks-list::-webkit-scrollbar-thumb,
+.image-manager-preview-image-container::-webkit-scrollbar-thumb {
+	background: var(--background-modifier-border);
+	border-radius: 5px;
+	border: 2px solid transparent;
+	background-clip: padding-box;
+}
+
+.image-manager-grid-panel::-webkit-scrollbar-thumb:hover,
+.image-manager-backlinks-list::-webkit-scrollbar-thumb:hover,
+.image-manager-preview-image-container::-webkit-scrollbar-thumb:hover {
+	background: var(--text-muted);
+	background-clip: padding-box;
+}
+
+/* ==================== 文件打开方式配置 ==================== */
+.file-open-mode-config {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.file-open-mode-description {
+	font-size: 12px;
+	color: var(--text-faint);
+	margin-bottom: 8px;
+}
+
+.file-open-mode-groups {
+	display: flex;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.file-open-mode-group {
+	flex: 1;
+	min-width: 280px;
+	border: 2px dashed var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	padding: 16px;
+	background: var(--background-secondary);
+	transition: all 0.2s ease;
+}
+
+.file-open-mode-group:hover {
+	border-color: var(--interactive-accent);
+	background: var(--background-primary);
+}
+
+.file-open-mode-group-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 12px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.file-open-mode-group-icon {
+	font-size: 18px;
+	line-height: 1;
+}
+
+.file-open-mode-group-title {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.file-open-mode-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	min-height: 60px;
+	align-content: flex-start;
+}
+
+.file-open-mode-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px 10px;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-radius: var(--radius-s);
+	font-size: 11px;
+	font-weight: 600;
+	cursor: grab;
+	transition: all 0.15s ease;
+	user-select: none;
+	letter-spacing: 0.3px;
+}
+
+.file-open-mode-badge:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-s);
+}
+
+.file-open-mode-badge:active {
+	cursor: grabbing;
+	transform: scale(0.95);
+}
+
+.file-open-mode-empty {
+	width: 100%;
+	padding: 20px;
+	text-align: center;
+	color: var(--text-faint);
+	font-size: 12px;
+	font-style: italic;
+}
+
+/* ==================== 响应式调整 ==================== */
+@media (max-width: 768px) {
+	.image-manager-grid {
+		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+		padding: 12px;
+		gap: 10px;
+	}
+	
+	.image-manager-preview-content {
+		flex-direction: column;
+	}
+	
+	.image-manager-preview-info-section {
+		width: 100%;
+		border-right: none;
+		border-top: 1px solid var(--background-modifier-border);
+		max-height: 40%;
+	}
+	
+	.file-open-mode-groups {
+		flex-direction: column;
+	}
+	
+	.file-open-mode-group {
+		min-width: 100%;
+	}
+}

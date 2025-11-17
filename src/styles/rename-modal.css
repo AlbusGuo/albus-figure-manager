@@ -2,8 +2,8 @@
  * 重命名Modal样式
  */
 
-.image-manager-rename-modal {
-	width: 400px;
+.modal.image-manager-rename-modal .modal-content {
+	width: 380px;
 	max-width: 90vw;
 }
 

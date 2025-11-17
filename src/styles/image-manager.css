@@ -1,65 +1,173 @@
-/**
- * 图片管理器样式
+﻿/**
+ * 图片管理器样式 - Obsidian 原生风格重构版
+ * 设计原则：简洁、原生、功能清晰
  */
 
-/* 主容器 */
+/* ==================== 主容器 ==================== */
 .image-manager-container {
 	display: flex;
 	flex-direction: column;
-	height: 80vh;
+	height: 100%;
+	width: 100%;
 	background: var(--background-primary);
-	border-radius: var(--radius-m);
 	overflow: hidden;
-	position: relative;
-	border: 1px solid var(--background-modifier-border);
 }
 
-/* 头部 */
+/* ==================== 头部区域 ==================== */
 .image-manager-header {
-	padding: 16px 20px;
+	padding: 12px 16px;
 	border-bottom: 1px solid var(--background-modifier-border);
-	background: var(--background-secondary);
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 12px;
+	background: var(--background-primary);
 	flex-shrink: 0;
 }
 
-.image-manager-header-actions {
+.image-manager-header-row {
 	display: flex;
+	justify-content: space-between;
 	align-items: center;
 	gap: 12px;
 }
 
-.image-manager-stats {
+.image-manager-header-left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+	min-width: 0;
+}
+
+.image-manager-header-right {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+/* 检查状态提示 */
+.image-manager-checking-status {
 	font-size: 12px;
 	color: var(--text-muted);
-	font-weight: 500;
+	animation: pulse 1.5s ease-in-out infinite;
 }
 
-.image-manager-reference-actions {
+@keyframes pulse {
+	0%, 100% { opacity: 0.6; }
+	50% { opacity: 1; }
+}
+
+/* ==================== 文件夹选择按钮 ==================== */
+.image-manager-folder-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	background: transparent;
+	color: var(--text-muted);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--button-radius);
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s ease;
+	flex-shrink: 0;
+	max-width: 300px;
+}
+
+.image-manager-folder-button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	border-color: var(--text-muted);
+}
+
+.image-manager-folder-icon {
 	display: flex;
-	gap: 8px;
+	align-items: center;
+	flex-shrink: 0;
 }
 
+.image-manager-folder-icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+.image-manager-folder-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 内联文件夹输入 */
+.image-manager-folder-input-container {
+	display: inline-block;
+	position: relative;
+	min-width: 200px;
+}
+
+.image-manager-folder-input-inline {
+	width: 100%;
+	padding: 4px 10px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	border: 1px solid var(--interactive-accent);
+	border-radius: var(--input-radius);
+	font-size: 13px;
+	outline: none;
+}
+
+.image-manager-folder-input-inline:focus {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px var(--background-modifier-border);
+}
+
+/* 文件夹建议列表 */
+.image-manager-suggestion-container {
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	box-shadow: var(--shadow-s);
+}
+
+.image-manager-suggestion-item {
+	padding: 6px 12px;
+	cursor: pointer;
+	font-size: 13px;
+	color: var(--text-normal);
+}
+
+.image-manager-suggestion-item.is-selected {
+	background: var(--background-modifier-hover);
+}
+
+.image-manager-suggestion-item:hover {
+	background: var(--background-modifier-hover);
+}
+
+/* ==================== 操作按钮 ==================== */
 .image-manager-filter-button,
 .image-manager-check-refs-button {
-	padding: 6px 12px;
-	background: var(--interactive-normal);
-	color: var(--text-normal);
-	border: none;
-	border-radius: var(--radius-s);
+	padding: 4px 10px;
+	min-width: 80px;
+	background: transparent;
+	color: var(--text-muted);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--button-radius);
 	cursor: pointer;
 	font-size: 12px;
-	font-weight: 500;
-	transition: all 0.2s ease;
+	transition: all 0.15s ease;
+	white-space: nowrap;
+	text-align: center;
 }
 
-.image-manager-filter-button:hover:not(:disabled),
-.image-manager-check-refs-button:hover:not(:disabled) {
-	background: var(--interactive-hover);
+.image-manager-filter-button:hover,
+.image-manager-check-refs-button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	border-color: var(--text-muted);
+}
+
+.image-manager-filter-button-active {
+	background: var(--interactive-accent) !important;
+	color: var(--text-on-accent) !important;
+	border-color: var(--interactive-accent) !important;
 }
 
 .image-manager-filter-button:disabled,
@@ -68,84 +176,83 @@
 	cursor: not-allowed;
 }
 
-.image-manager-filter-button-active {
-	background: var(--interactive-accent) !important;
-	color: white !important;
+/* ==================== 搜索栏 ==================== */
+.image-manager-search {
+	padding: 10px 16px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	flex-shrink: 0;
 }
 
-/* 搜索和排序栏 */
 .image-manager-search-sort-bar {
-	padding: 12px 20px;
-	border-bottom: 1px solid var(--background-modifier-border);
-	background: var(--background-secondary);
 	display: flex;
-	gap: 16px;
+	gap: 12px;
 	align-items: center;
-	flex-shrink: 0;
 }
 
 .image-manager-search-box {
 	position: relative;
 	flex: 1;
-	max-width: 400px;
+	min-width: 0;
 }
 
 .image-manager-search-input {
 	width: 100%;
-	padding: 8px 32px 8px 12px;
+	padding: 6px 30px 6px 10px;
 	border: 1px solid var(--background-modifier-border);
-	border-radius: var(--radius-s);
+	border-radius: var(--input-radius);
 	background: var(--background-primary);
 	color: var(--text-normal);
 	font-size: 13px;
-	transition: all 0.2s ease;
+	transition: border-color 0.15s ease;
 }
 
 .image-manager-search-input:focus {
 	outline: none;
 	border-color: var(--interactive-accent);
-	box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.1);
+}
+
+.image-manager-search-input::placeholder {
+	color: var(--text-faint);
 }
 
 .image-manager-clear-search-button {
 	position: absolute;
-	right: 8px;
+	right: 6px;
 	top: 50%;
 	transform: translateY(-50%);
 	background: none;
 	border: none;
-	color: var(--text-muted);
+	color: var(--text-faint);
 	cursor: pointer;
-	padding: 4px;
+	padding: 2px;
 	border-radius: var(--radius-s);
-	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .image-manager-clear-search-button:hover {
 	background: var(--background-modifier-hover);
-	color: var(--text-normal);
+	color: var(--text-muted);
 }
 
 .image-manager-sort-controls {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-}
-
-.image-manager-sort-label {
-	font-size: 13px;
-	color: var(--text-muted);
-	white-space: nowrap;
+	gap: 6px;
+	flex-shrink: 0;
 }
 
 .image-manager-sort-select {
-	padding: 6px 8px;
+	padding: 4px 8px;
 	border: 1px solid var(--background-modifier-border);
-	border-radius: var(--radius-s);
+	border-radius: var(--input-radius);
 	background: var(--background-primary);
 	color: var(--text-normal);
-	font-size: 13px;
+	font-size: 12px;
 	cursor: pointer;
+	transition: border-color 0.15s ease;
 }
 
 .image-manager-sort-select:focus {
@@ -153,119 +260,123 @@
 	border-color: var(--interactive-accent);
 }
 
-/* 图片网格面板 */
+.image-manager-sort-select:hover {
+	border-color: var(--text-muted);
+}
+
+.image-manager-sort-order-button {
+	padding: 4px 8px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--button-radius);
+	background: var(--background-primary);
+	color: var(--text-muted);
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 28px;
+}
+
+.image-manager-sort-order-button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	border-color: var(--text-muted);
+}
+
+/* ==================== 网格面板 ==================== */
 .image-manager-grid-panel {
 	flex: 1;
-	display: flex;
-	flex-direction: column;
-	background: var(--background-primary-alt);
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
+	background: var(--background-primary);
 	min-height: 0;
-}
-
-.image-manager-grid-header {
-	padding: 12px 16px;
-	border-bottom: 1px solid var(--background-modifier-border);
-	background: var(--background-secondary);
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	flex-shrink: 0;
-}
-
-.image-manager-grid-header h3 {
-	margin: 0;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--text-normal);
-}
-
-.image-manager-format-info {
-	font-size: 11px;
-	color: var(--text-muted);
 }
 
 /* 加载状态 */
 .image-manager-loading-state {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	color: var(--text-muted);
-	gap: 16px;
-	padding: 40px;
-}
-
-.image-manager-loading-spinner {
-	width: 32px;
-	height: 32px;
-	border: 3px solid var(--background-modifier-border);
-	border-top: 3px solid var(--interactive-accent);
-	border-radius: 50%;
-	animation: image-manager-spin 1s linear infinite;
-}
-
-@keyframes image-manager-spin {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
-.image-manager-empty-state {
-	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	color: var(--text-muted);
 	gap: 12px;
-	padding: 40px;
+	padding: 60px 20px;
+}
+
+.image-manager-loading-spinner {
+	width: 24px;
+	height: 24px;
+	border: 2px solid var(--background-modifier-border);
+	border-top-color: var(--interactive-accent);
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+/* 空状态 */
+.image-manager-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-muted);
+	gap: 8px;
+	padding: 60px 20px;
 	text-align: center;
+	font-size: 13px;
 }
 
 .image-manager-empty-hint {
 	font-size: 12px;
-	opacity: 0.8;
+	color: var(--text-faint);
 }
 
-/* 图片网格 */
+/* 加载更多指示器 */
+.image-manager-load-more {
+	padding: 16px;
+	text-align: center;
+	color: var(--text-faint);
+	font-size: 12px;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+/* ==================== 图片网格 ==================== */
 .image-manager-grid {
-	flex: 1;
-	padding: 12px;
+	padding: 16px;
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-	grid-auto-rows: min-content;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 	gap: 12px;
-	overflow-y: auto;
-	align-content: flex-start;
+	align-content: start;
 }
 
+/* 图片卡片 */
 .image-manager-grid-item {
 	border: 1px solid var(--background-modifier-border);
-	border-radius: var(--radius-s);
+	border-radius: var(--radius-m);
 	background: var(--background-primary);
 	cursor: pointer;
 	transition: all 0.2s ease;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	height: 220px;
 	position: relative;
 }
 
 .image-manager-grid-item:hover {
 	border-color: var(--interactive-accent);
-	transform: translateY(-2px);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	box-shadow: var(--shadow-s);
+	transform: translateY(-1px);
 }
 
+/* 缩略图容器 */
 .image-manager-thumbnail {
 	position: relative;
-	height: 120px;
+	height: 140px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -278,16 +389,12 @@
 	max-width: 100%;
 	max-height: 100%;
 	object-fit: contain;
-	transition: opacity 0.3s ease;
 }
 
-/* SVG图片在深色模式下反色 */
-.image-manager-svg-image {
-	filter: none;
-}
-
+/* SVG 图片在深色模式下的处理 */
 .theme-dark .image-manager-svg-image {
-	filter: invert(1) hue-rotate(180deg);
+	filter: invert(0.92) hue-rotate(180deg);
+	opacity: 0.9;
 }
 
 /* 封面缺失占位符 */
@@ -297,80 +404,113 @@
 	justify-content: center;
 	width: 100%;
 	height: 100%;
-	color: var(--text-muted);
+	color: var(--text-faint);
 }
 
 .image-manager-cover-missing-content {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	align-items: center;
 	gap: 6px;
+	text-align: center;
 }
 
 .image-manager-cover-missing-icon {
-	width: 20px;
-	height: 20px;
-	opacity: 0.5;
-	display: inline-flex;
+	width: 32px;
+	height: 32px;
+	opacity: 0.4;
+	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex-shrink: 0;
 }
 
 .image-manager-cover-missing-icon svg {
-	width: 20px;
-	height: 20px;
+	width: 100%;
+	height: 100%;
 }
 
 .image-manager-cover-missing-text {
-	font-size: 12px;
+	font-size: 11px;
+	color: var(--text-faint);
+}
+
+/* 预览模态框图片加载错误 */
+.image-manager-preview-error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 40px 20px;
+	text-align: center;
+}
+
+.image-manager-preview-error-icon {
+	font-size: 48px;
+	opacity: 0.5;
+}
+
+.image-manager-preview-error-text {
+	font-size: 16px;
+	font-weight: 600;
 	color: var(--text-muted);
-	opacity: 0.7;
-	white-space: nowrap;
+}
+
+.image-manager-preview-error-hint {
+	font-size: 13px;
+	color: var(--text-faint);
+	max-width: 300px;
+	line-height: 1.5;
 }
 
 /* 格式标签 */
 .image-manager-format-badge {
 	position: absolute;
-	top: 4px;
-	right: 4px;
-	font-size: 10px;
-	padding: 2px 6px;
+	top: 6px;
+	right: 6px;
+	font-size: 9px;
+	padding: 2px 5px;
 	border-radius: var(--radius-s);
 	font-weight: 600;
+	background: var(--background-primary);
+	color: var(--text-muted);
+	border: 1px solid var(--background-modifier-border);
 	z-index: 2;
-	color: white;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
 }
 
 .image-manager-agx-format {
 	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
 }
 
-.image-manager-other-format {
-	background: var(--text-muted);
-}
-
+/* 引用标签 */
 .image-manager-reference-badge {
 	position: absolute;
 	top: 4px;
 	left: 4px;
-	background: rgba(var(--interactive-accent-rgb), 0.9);
+	background: rgba(239, 68, 68, 0.9); /* 红色表示未引用 */
 	color: white;
 	font-size: 10px;
-	padding: 2px 4px;
+	padding: 3px 6px;
 	border-radius: var(--radius-s);
 	font-weight: 600;
 	z-index: 2;
 }
 
+.image-manager-reference-badge-has-refs {
+	background: rgba(34, 197, 94, 0.9); /* 绿色表示有引用 */
+}
+
+/* 信息区域 */
 .image-manager-image-info {
-	padding: 8px;
-	flex: 1;
+	padding: 10px;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
-	min-height: 60px;
-	height: 60px;
+	gap: 6px;
+	min-height: 0;
 }
 
 .image-manager-image-name {
@@ -380,107 +520,66 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	margin-bottom: 4px;
-	flex-shrink: 0;
-	line-height: 1.2;
+	line-height: 1.3;
 }
 
 .image-manager-image-meta {
-	margin-bottom: 6px;
-	flex-shrink: 0;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	gap: 4px;
+	gap: 6px;
+	font-size: 11px;
+	color: var(--text-muted);
 }
 
-.image-manager-reference-count {
-	font-size: 10px;
-	color: var(--interactive-accent);
-	background: rgba(var(--interactive-accent-rgb), 0.1);
-	padding: 2px 6px;
-	border-radius: 8px;
-	font-weight: 600;
-	flex-shrink: 0;
+.image-manager-meta-item {
+	white-space: nowrap;
 }
 
-.image-manager-create-time {
-	font-size: 10px;
+.image-manager-meta-size {
 	color: var(--text-faint);
-	flex-shrink: 0;
 }
 
+.image-manager-meta-date {
+	color: var(--text-faint);
+}
+
+/* 操作按钮 */
 .image-manager-image-actions {
 	display: flex;
 	gap: 4px;
-	justify-content: center;
-	flex-shrink: 0;
 	margin-top: auto;
+	padding: 4px;
 }
 
 .image-manager-action-button {
-	padding: 6px;
-	border: none;
-	border-radius: var(--radius-s);
-	background: transparent;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 14px;
-	flex-shrink: 0;
 	flex: 1;
+	padding: 5px;
+	border: none;
+	border-radius: var(--button-radius);
+	background: var(--background-secondary);
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: all 0.15s ease;
+	font-size: 11px;
+	text-align: center;
 }
 
 .image-manager-action-button:hover {
 	background: var(--background-modifier-hover);
-	transform: scale(1.1);
+	color: var(--text-normal);
 }
 
 .image-manager-open-button:hover {
-	background: var(--interactive-success);
+	color: var(--color-green);
 }
 
 .image-manager-rename-button:hover {
-	background: var(--interactive-accent);
+	color: var(--color-blue);
 }
 
 .image-manager-delete-button:hover {
-	background: var(--interactive-danger);
+	color: var(--color-red);
 }
 
-/* 滚动条样式 */
-.image-manager-grid::-webkit-scrollbar {
-	width: 8px;
-}
-
-.image-manager-grid::-webkit-scrollbar-track {
-	background: var(--background-secondary);
-	border-radius: 4px;
-}
-
-.image-manager-grid::-webkit-scrollbar-thumb {
-	background: var(--background-modifier-border);
-	border-radius: 4px;
-}
-
-.image-manager-grid::-webkit-scrollbar-thumb:hover {
-	background: var(--interactive-accent);
-}
-
-/* 动画效果 */
-@keyframes image-manager-fadeIn {
-	from {
-		opacity: 0;
-		transform: scale(0.95);
-	}
-	to {
-		opacity: 1;
-		transform: scale(1);
-	}
-}
-
-.image-manager-grid-item {
-	animation: image-manager-fadeIn 0.2s ease;
-}
+/* ==================== 预览模态框 ==================== */
