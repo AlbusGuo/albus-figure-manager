@@ -237,8 +237,9 @@ export class ImageViewerView {
 	 * 打开图片查看器
 	 */
 	open(imgEl: HTMLImageElement): void {
-		const parentEl = imgEl.matchParent('body');
-		if (!parentEl || !(parentEl instanceof HTMLElement)) return;
+		// 始终挂载到 document.body，确保不被局部容器遮挡
+		const parentEl = document.body;
+		if (!parentEl) return;
 
 		// 初始化容器
 		this.initContainerDom(parentEl);

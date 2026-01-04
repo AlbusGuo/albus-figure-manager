@@ -11,6 +11,7 @@ export class ImageViewerManager {
 	private settings: ImageViewerSettings;
 	private viewer: ImageViewerView | null = null;
 	private imgSelector: string = '';
+	private registeredDocs: Set<Document> = new Set();
 	private static readonly IMG_ORIGIN_CURSOR = 'data-afm-origin-cursor';
 
 	constructor(app: App, settings: ImageViewerSettings) {
@@ -26,6 +27,10 @@ export class ImageViewerManager {
 		if (this.viewer) {
 			this.viewer.updateSettings(settings);
 		}
+		// 重新应用所有窗口的事件监听
+		this.registeredDocs.forEach(doc => {
+			this.refreshViewTrigger(doc);
+		});
 	}
 
 	/**
@@ -39,66 +44,55 @@ export class ImageViewerManager {
 	}
 
 	/**
-	 * 检查是否可点击（必须按住 Ctrl 键）
+	 * 检查是否可点击（必须按住 Ctrl 键且查看器已启用）
 	 */
 	private isClickable(targetEl: HTMLImageElement, event: MouseEvent): boolean {
-		return (
-			targetEl &&
-			targetEl.tagName === 'IMG' &&
-			event.ctrlKey && !event.altKey && !event.shiftKey
-		);
+		if (!targetEl || targetEl.tagName !== 'IMG') {
+			return false;
+		}
+		
+		// 必须按住 Ctrl 键
+		if (!event.ctrlKey || event.altKey || event.shiftKey) {
+			return false;
+		}
+		
+		// 检查查看器是否启用
+		return this.settings.enabled;
 	}
 
 	/**
 	 * 刷新视图触发器（设置事件监听）
 	 */
 	refreshViewTrigger(doc?: Document): void {
-		const { viewImageInEditor, viewImageInCPB, viewImageWithLink, viewImageOther } = this.settings;
-
 		if (!doc) {
 			doc = document;
 		}
+
+		// 记录此文档
+		this.registeredDocs.add(doc);
 
 		// 移除旧的事件监听
 		if (this.imgSelector) {
 			doc.off('click', this.imgSelector, this.clickImage);
 			doc.off('mouseover', this.imgSelector, this.mouseoverImg);
 			doc.off('mouseout', this.imgSelector, this.mouseoutImg);
-			// 移除捕获阶段的监听
-			doc.removeEventListener('click', this.clickImageCapture, true);
 		}
+		// 移除捕获阶段的监听
+		doc.removeEventListener('click', this.clickImageCapture, true);
 
-		// 如果全部禁用，不添加监听
-		if (!viewImageOther && !viewImageInEditor && !viewImageInCPB && !viewImageWithLink) {
+		// 如果禁用，不添加监听
+		if (!this.settings.enabled) {
+			this.imgSelector = '';
 			return;
 		}
 
-		// 构建选择器
-		let selector = '';
-		if (viewImageInEditor) {
-			selector += viewImageWithLink
-				? VIEW_IMG_SELECTOR.EDITOR_AREAS
-				: VIEW_IMG_SELECTOR.EDITOR_AREAS_NO_LINK;
-		}
-		if (viewImageInCPB) {
-			selector += (selector.length > 0 ? ',' : '') + (viewImageWithLink
-				? VIEW_IMG_SELECTOR.CPB
-				: VIEW_IMG_SELECTOR.CPB_NO_LINK);
-		}
-		if (viewImageOther) {
-			selector += (selector.length > 0 ? ',' : '') + (viewImageWithLink
-				? VIEW_IMG_SELECTOR.OTHER
-				: VIEW_IMG_SELECTOR.OTHER_NO_LINK);
-		}
-
-		if (selector) {
-			this.imgSelector = selector;
-			// 在捕获阶段监听点击事件，优先阻止默认行为
-			doc.addEventListener('click', this.clickImageCapture, true);
-			doc.on('click', this.imgSelector, this.clickImage);
-			doc.on('mouseover', this.imgSelector, this.mouseoverImg);
-			doc.on('mouseout', this.imgSelector, this.mouseoutImg);
-		}
+		// 监听所有img元素
+		this.imgSelector = 'img';
+		// 在捕获阶段监听点击事件，优先阻止默认行为
+		doc.addEventListener('click', this.clickImageCapture, true);
+		doc.on('click', this.imgSelector, this.clickImage);
+		doc.on('mouseover', this.imgSelector, this.mouseoverImg);
+		doc.on('mouseout', this.imgSelector, this.mouseoutImg);
 	}
 
 	/**
@@ -167,13 +161,16 @@ export class ImageViewerManager {
 	 * 卸载
 	 */
 	cleanup(): void {
-		// 移除事件监听
-		if (this.imgSelector) {
-			document.removeEventListener('click', this.clickImageCapture, true);
-			document.off('click', this.imgSelector, this.clickImage);
-			document.off('mouseover', this.imgSelector, this.mouseoverImg);
-			document.off('mouseout', this.imgSelector, this.mouseoutImg);
-		}
+		// 移除所有文档的事件监听
+		this.registeredDocs.forEach(doc => {
+			if (this.imgSelector) {
+				doc.removeEventListener('click', this.clickImageCapture, true);
+				doc.off('click', this.imgSelector, this.clickImage);
+				doc.off('mouseover', this.imgSelector, this.mouseoverImg);
+				doc.off('mouseout', this.imgSelector, this.mouseoutImg);
+			}
+		});
+		this.registeredDocs.clear();
 
 		// 移除查看器
 		if (this.viewer) {

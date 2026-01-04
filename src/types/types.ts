@@ -17,14 +17,8 @@ export interface ImageResizeSettings {
  * 图片查看器设置接口
  */
 export interface ImageViewerSettings {
-	/** 是否在编辑器中查看图片 */
-	viewImageInEditor: boolean;
-	/** 是否在社区插件浏览器中查看图片 */
-	viewImageInCPB: boolean;
-	/** 是否查看带链接的图片 */
-	viewImageWithLink: boolean;
-	/** 是否在其他位置查看图片 */
-	viewImageOther: boolean;
+	/** 是否启用图片查看器 */
+	enabled: boolean;
 }
 
 export interface IPluginSettings {
@@ -40,10 +34,7 @@ export const DEFAULT_IMAGE_RESIZE_SETTINGS: ImageResizeSettings = {
 };
 
 export const DEFAULT_IMAGE_VIEWER_SETTINGS: ImageViewerSettings = {
-	viewImageInEditor: true,
-	viewImageInCPB: true,
-	viewImageWithLink: true,
-	viewImageOther: true,
+	enabled: true,
 };
 
 export const DEFAULT_SETTINGS: IPluginSettings = {

@@ -22,7 +22,7 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 		}
 
 		// 初始化图片查看器
-		if (this.settings.imageViewer) {
+		if (this.settings.imageViewer?.enabled) {
 			this.initializeImageViewer();
 		}
 
@@ -137,23 +137,34 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 		await this.saveData(this.settings);
 		
 		// 更新调整大小处理器设置
-		if (this.settings.imageResize) {
-			if (this.settings.imageResize.dragResize && !this.resizeHandler) {
+		if (this.settings.imageResize?.dragResize) {
+			if (!this.resizeHandler) {
 				// 如果启用了拖拽调整但处理器未初始化，则初始化
 				this.initializeResizeHandler();
-			} else if (this.resizeHandler) {
+			} else {
 				// 更新现有处理器的设置
 				this.resizeHandler.updateSettings(this.settings.imageResize);
+			}
+		} else {
+			// 禁用时清除处理器
+			if (this.resizeHandler) {
+				this.resizeHandler = null;
 			}
 		}
 
 		// 更新图片查看器设置
-		if (this.settings.imageViewer) {
+		if (this.settings.imageViewer?.enabled) {
 			if (!this.imageViewerManager) {
 				this.initializeImageViewer();
 			} else {
 				this.imageViewerManager.updateSettings(this.settings.imageViewer);
 				this.imageViewerManager.refreshViewTrigger();
+			}
+		} else {
+			// 禁用时清除管理器
+			if (this.imageViewerManager) {
+				this.imageViewerManager.cleanup();
+				this.imageViewerManager = null;
 			}
 		}
 		

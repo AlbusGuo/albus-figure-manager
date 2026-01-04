@@ -3,51 +3,38 @@ import { ImageManagerSettings } from "./ImageManagerSettings";
 import { ImageResizeSettings } from "./ImageResizeSettings";
 import { ImageViewerSettings } from "./ImageViewerSettings";
 
-// 设置组件辅助组件
+// 设置组件辅助组件 - 使用 Obsidian 默认样式
+export const SettingMainTitle: FC<{ children: ReactNode }> = ({ children }) => (
+	<h3 className="setting-item-heading" style={{ fontSize: "1.5em", marginTop: "1em", marginBottom: "0.5em" }}>
+		{children}
+	</h3>
+);
+
 export const SettingTitle: FC<{ children: ReactNode }> = ({ children }) => (
-	<h2 style={{
-		marginTop: "1.5rem",
-		marginBottom: "0.5rem",
-		fontSize: "1.1rem",
-		fontWeight: 600,
-		color: "var(--text-normal)",
-	}}>
+	<h2 className="setting-item-heading">
 		{children}
 	</h2>
 );
 
 export const SettingDescription: FC<{ children: ReactNode }> = ({ children }) => (
-	<div style={{
-		marginBottom: "1rem",
-		fontSize: "0.875rem",
-		color: "var(--text-muted)",
-		lineHeight: 1.6,
-	}}>
+	<div className="setting-item-description">
 		{children}
 	</div>
 );
 
 export const SettingDivider: FC = () => (
-	<hr style={{
-		margin: "1.5rem 0",
-		border: "none",
-		borderTop: "1px solid var(--background-modifier-border)",
-	}} />
+	<div style={{ marginTop: "18px", marginBottom: "18px" }} />
 );
 
-export const Setting: FC<{ label: string; children: ReactNode }> = ({ label, children }) => (
-	<div style={{
-		marginBottom: "1rem",
-	}}>
-		<div style={{
-			marginBottom: "0.5rem",
-			fontSize: "0.9rem",
-			fontWeight: 500,
-			color: "var(--text-normal)",
-		}}>
-			{label}
+export const Setting: FC<{ label: string; description?: string; children: ReactNode }> = ({ label, description, children }) => (
+	<div className="setting-item">
+		<div className="setting-item-info">
+			<div className="setting-item-name">{label}</div>
+			{description && <div className="setting-item-description">{description}</div>}
 		</div>
-		{children}
+		<div className="setting-item-control">
+			{children}
+		</div>
 	</div>
 );
 
@@ -57,83 +44,33 @@ export const SettingSwitch: FC<{
 	checked: boolean;
 	onChange: (checked: boolean) => void;
 }> = ({ label, description, checked, onChange }) => (
-	<div style={{
-		display: "flex",
-		alignItems: "flex-start",
-		marginBottom: "1rem",
-	}}>
-		<div style={{ flex: 1 }}>
-			<div style={{
-				fontWeight: 500,
-				color: "var(--text-normal)",
-				marginBottom: description ? "0.25rem" : 0,
-			}}>
-				{label}
-			</div>
-			{description && (
-				<div style={{
-					fontSize: "0.875rem",
-					color: "var(--text-muted)",
-				}}>
-					{description}
-				</div>
-			)}
+	<div className="setting-item">
+		<div className="setting-item-info">
+			<div className="setting-item-name">{label}</div>
+			{description && <div className="setting-item-description">{description}</div>}
 		</div>
-		<div style={{ marginLeft: "1rem" }}>
-			<label style={{
-				position: "relative",
-				display: "inline-block",
-				width: "44px",
-				height: "24px",
-				cursor: "pointer",
-			}}>
+		<div className="setting-item-control">
+			<div className={`checkbox-container${checked ? ' is-enabled' : ''}`} onClick={() => onChange(!checked)}>
 				<input
 					type="checkbox"
 					checked={checked}
 					onChange={(e) => onChange(e.target.checked)}
-					style={{
-						opacity: 0,
-						width: 0,
-						height: 0,
-					}}
 				/>
-				<span style={{
-					position: "absolute",
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
-					backgroundColor: checked ? "var(--interactive-accent)" : "var(--background-modifier-border)",
-					borderRadius: "24px",
-					transition: "background-color 0.2s",
-					cursor: "pointer",
-				}}>
-					<span style={{
-						position: "absolute",
-						content: "''",
-						height: "18px",
-						width: "18px",
-						left: checked ? "23px" : "3px",
-						bottom: "3px",
-						backgroundColor: "white",
-						borderRadius: "50%",
-						transition: "left 0.2s",
-					}} />
-				</span>
-			</label>
+			</div>
 		</div>
 	</div>
 );
 
 export const Settings: FC = () => {
 	return (
-		<div style={{
-			maxWidth: "800px",
-		}}>
+		<div>
+			<SettingMainTitle>图片管理器</SettingMainTitle>
 			<ImageManagerSettings />
 			<SettingDivider />
+			<SettingMainTitle>图片调整大小</SettingMainTitle>
 			<ImageResizeSettings />
 			<SettingDivider />
+			<SettingMainTitle>图片查看器</SettingMainTitle>
 			<ImageViewerSettings />
 		</div>
 	);

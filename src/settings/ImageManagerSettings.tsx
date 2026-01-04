@@ -8,7 +8,30 @@ import { Setting, SettingDivider, SettingSwitch, SettingTitle, SettingDescriptio
 import { CustomFileTypeConfig, SUPPORTED_IMAGE_EXTENSIONS, FileOpenMode } from "@src/types/image-manager.types";
 import { FolderInput } from "@src/components/FolderInput";
 import { FileOpenModeConfig } from "@src/components/FileOpenModeConfig";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { setIcon } from "obsidian";
+
+// 删除按钮组件
+function DeleteButton({ onClick }: { onClick: () => void }) {
+	const buttonRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		if (buttonRef.current) {
+			buttonRef.current.empty();
+			setIcon(buttonRef.current, "trash-2");
+		}
+	}, []);
+
+	return (
+		<button
+			ref={buttonRef}
+			onClick={onClick}
+			className="clickable-icon"
+			aria-label="删除"
+			style={{ padding: "4px" }}
+		/>
+	);
+}
 
 export function ImageManagerSettings() {
 	const app = useApp();
@@ -66,9 +89,8 @@ export function ImageManagerSettings() {
 
 	return (
 		<>
-			<SettingTitle>显示选项</SettingTitle>
 			<SettingDescription>
-				文件夹选择器已移至图片管理器界面顶部，便于快速切换路径
+				配置图片管理器的显示和行为选项
 			</SettingDescription>
 
 			<SettingSwitch
@@ -102,10 +124,6 @@ export function ImageManagerSettings() {
 				}
 			/>
 
-			<SettingDivider />
-
-			<SettingTitle>行为选项</SettingTitle>
-
 			<SettingSwitch
 				label="删除前确认"
 				description="删除文件前显示确认对话框"
@@ -117,120 +135,55 @@ export function ImageManagerSettings() {
 
 			<SettingDivider />
 
-			<SettingTitle>自定义文件类型</SettingTitle>
+			<h4 className="setting-item-heading">自定义文件类型</h4>
 			<SettingDescription>
 				配置需要特殊处理的文件格式。这些文件将使用指定的封面文件进行显示，删除和重命名时会同时处理原文件和封面文件。
 			</SettingDescription>
 
 			{customTypes.map((type, index) => (
-				<div key={index} style={{ 
-					border: "1px solid var(--background-modifier-border)", 
-					borderRadius: "4px", 
-					padding: "12px", 
-					marginBottom: "12px" 
-				}}>
-			<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-				<span style={{ fontWeight: 500 }}>配置 {index + 1}</span>
-				<button
-					onClick={() => removeCustomFileType(index)}
-					style={{
-						padding: "4px 12px",
-						fontSize: "12px",
-						background: "var(--background-modifier-error)",
-						color: "var(--text-on-accent)",
-						border: "none",
-						borderRadius: "4px",
-						cursor: "pointer",
-					}}
-				>
-					删除
-				</button>
-			</div>					<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-						<div>
-							<label style={{ fontSize: "13px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
-								文件扩展名（如: agx）
-							</label>
-							<input
-								type="text"
-								value={type.fileExtension}
-								onChange={(e) => updateCustomFileType(index, { fileExtension: e.target.value.toLowerCase() })}
-								placeholder="例如: agx"
-								style={{
-									width: "100%",
-									padding: "6px 12px",
-									background: "var(--background-primary)",
-									color: "var(--text-normal)",
-									border: "1px solid var(--background-modifier-border)",
-									borderRadius: "4px",
-									fontSize: "13px",
-								}}
-							/>
-						</div>
-
-						<div>
-							<label style={{ fontSize: "13px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
-								封面文件扩展名（如: svg, png）
-							</label>
-							<input
-								type="text"
-								value={type.coverExtension}
-								onChange={(e) => updateCustomFileType(index, { coverExtension: e.target.value.toLowerCase() })}
-								placeholder="例如: svg"
-								style={{
-									width: "100%",
-									padding: "6px 12px",
-									background: "var(--background-primary)",
-									color: "var(--text-normal)",
-									border: "1px solid var(--background-modifier-border)",
-									borderRadius: "4px",
-									fontSize: "13px",
-								}}
-							/>
-						</div>
-
-						<div>
-							<label style={{ fontSize: "13px", color: "var(--text-muted)", display: "block", marginBottom: "4px" }}>
-								封面文件夹路径（相对路径，留空表示同级目录）
-							</label>
-							<input
-								type="text"
-								value={type.coverFolder}
-								onChange={(e) => updateCustomFileType(index, { coverFolder: e.target.value })}
-								placeholder="例如: covers 或留空"
-								style={{
-									width: "100%",
-									padding: "6px 12px",
-									background: "var(--background-primary)",
-									color: "var(--text-normal)",
-									border: "1px solid var(--background-modifier-border)",
-									borderRadius: "4px",
-									fontSize: "13px",
-								}}
-							/>
-						</div>
+				<div key={index} className="setting-item">
+					<div className="setting-item-info">
+						<div className="setting-item-name">配置 {index + 1}</div>
+					</div>
+					<div className="setting-item-control" style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+						<input
+							type="text"
+							value={type.fileExtension}
+							onChange={(e) => updateCustomFileType(index, { fileExtension: e.target.value.toLowerCase() })}
+							placeholder="文件扩展名 (如: agx)"
+							style={{ width: "120px" }}
+						/>
+						<span style={{ color: "var(--text-muted)" }}>→</span>
+						<input
+							type="text"
+							value={type.coverExtension}
+							onChange={(e) => updateCustomFileType(index, { coverExtension: e.target.value.toLowerCase() })}
+							placeholder="封面扩展名 (如: svg)"
+							style={{ width: "140px" }}
+						/>
+						<input
+							type="text"
+							value={type.coverFolder}
+							onChange={(e) => updateCustomFileType(index, { coverFolder: e.target.value })}
+							placeholder="封面文件夹 (可选)"
+							style={{ width: "150px" }}
+						/>
+						<DeleteButton onClick={() => removeCustomFileType(index)} />
 					</div>
 				</div>
 			))}
 
 			<button
 				onClick={addCustomFileType}
-				style={{
-					padding: "8px 16px",
-					background: "var(--interactive-accent)",
-					color: "var(--text-on-accent)",
-					border: "none",
-					borderRadius: "4px",
-					cursor: "pointer",
-					fontSize: "13px",
-					fontWeight: 500,
-				}}
+				className="mod-cta"
+				style={{ marginTop: "8px" }}
 			>
 				+ 添加自定义文件类型
 			</button>
 
 			<SettingDivider />
 
-			<SettingTitle>文件打开方式</SettingTitle>
+			<h4 className="setting-item-heading">文件打开方式</h4>
 			<SettingDescription>
 				配置不同文件类型的打开方式。拖拽文件类型标签到相应区域来切换打开方式。
 			</SettingDescription>
