@@ -12,9 +12,50 @@ export class ImageGridComponent {
 	private onOpenClick?: (image: ImageItem) => void;
 	private onRenameClick?: (image: ImageItem) => void;
 	private onDeleteClick?: (image: ImageItem) => void;
+	private intersectionObserver: IntersectionObserver | null = null;
 
 	constructor(containerEl: HTMLElement) {
 		this.containerEl = containerEl;
+		this.initIntersectionObserver();
+	}
+
+	/**
+	 * 初始化 IntersectionObserver 用于懒加载
+	 */
+	private initIntersectionObserver(): void {
+		// 创建 IntersectionObserver 实例
+		this.intersectionObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						const imgEl = entry.target as HTMLImageElement;
+						const dataSrc = imgEl.getAttribute("data-src");
+						if (dataSrc && !imgEl.src) {
+							// 开始加载图片
+							imgEl.src = dataSrc;
+							imgEl.removeAttribute("data-src");
+							// 加载后停止观察
+							this.intersectionObserver?.unobserve(imgEl);
+						}
+					}
+				});
+			},
+			{
+				// 提前 200px 开始加载
+				rootMargin: "200px",
+				threshold: 0.01,
+			}
+		);
+	}
+
+	/**
+	 * 清理资源
+	 */
+	destroy(): void {
+		if (this.intersectionObserver) {
+			this.intersectionObserver.disconnect();
+			this.intersectionObserver = null;
+		}
 	}
 
 	/**
@@ -41,6 +82,11 @@ export class ImageGridComponent {
 		images: ImageItem[],
 		getImagePath: (image: ImageItem) => string
 	): void {
+		// 先清理旧的观察器
+		if (this.intersectionObserver) {
+			this.intersectionObserver.disconnect();
+		}
+
 		this.containerEl.empty();
 
 		if (images.length === 0) {
@@ -94,12 +140,23 @@ export class ImageGridComponent {
 			const imgEl = thumbnailEl.createEl("img");
 			imgEl.addClass("image-manager-thumbnail-image");
 			const imagePath = getImagePath(image);
-			imgEl.src = imagePath;
+			
+			// 懒加载：使用 data-src 而不是直接设置 src
+			imgEl.setAttribute("data-src", imagePath);
 			imgEl.alt = image.name;
+			
+			// 添加占位背景
+			imgEl.style.backgroundColor = "var(--background-modifier-border)";
+			imgEl.style.minHeight = "200px"; // 确保有最小高度以便观察器能检测到
 
 			// SVG图片特殊处理 - 只有当显示的封面是 SVG 时才应用
 			if (image.displayFile.extension.toLowerCase() === "svg") {
 				imgEl.addClass("image-manager-svg-image");
+			}
+
+			// 将图片元素加入 IntersectionObserver
+			if (this.intersectionObserver) {
+				this.intersectionObserver.observe(imgEl);
 			}
 
 			// 添加加载错误处理，防止循环加载

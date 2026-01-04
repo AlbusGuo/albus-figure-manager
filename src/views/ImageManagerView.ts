@@ -37,7 +37,7 @@ export class ImageManagerView extends ItemView {
 	private renderedCount = 0;
 	private batchSize = 50; // 每批次渲染的图片数量
 	private isLoadingMore = false;
-	private scrollThreshold = 300; // 距离底部多少像素时开始加载
+	private scrollThreshold = 500; // 距离底部多少像素时开始加载（增大以提前加载）
 
 	// Services
 	private imageLoader: ImageLoaderService;
@@ -48,6 +48,9 @@ export class ImageManagerView extends ItemView {
 	private headerContainer: HTMLElement;
 	private searchContainer: HTMLElement;
 	private gridContainer: HTMLElement;
+
+	// 懒加载
+	private intersectionObserver: IntersectionObserver | null = null;
 
 	constructor(leaf: WorkspaceLeaf, settings: ImageManagerSettings) {
 		super(leaf);
@@ -81,13 +84,46 @@ export class ImageManagerView extends ItemView {
 		contentEl.empty();
 		contentEl.addClass("image-manager-container");
 
+		this.initIntersectionObserver();
 		this.setupLayout();
 		await this.loadImages();
 	}
 
 	async onClose(): Promise<void> {
 		// 清理工作
+		if (this.intersectionObserver) {
+			this.intersectionObserver.disconnect();
+			this.intersectionObserver = null;
+		}
 		this.contentEl.empty();
+	}
+
+	/**
+	 * 初始化 IntersectionObserver 用于懒加载
+	 */
+	private initIntersectionObserver(): void {
+		this.intersectionObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						const imgEl = entry.target as HTMLImageElement;
+						const dataSrc = imgEl.getAttribute("data-src");
+						if (dataSrc && !imgEl.src) {
+							// 开始加载图片
+							imgEl.src = dataSrc;
+							imgEl.removeAttribute("data-src");
+							// 加载后停止观察
+							this.intersectionObserver?.unobserve(imgEl);
+						}
+					}
+				});
+			},
+			{
+				// 提前 200px 开始加载
+				rootMargin: "200px",
+				threshold: 0.01,
+			}
+		);
 	}
 
 	/**
@@ -189,7 +225,15 @@ export class ImageManagerView extends ItemView {
 				? "image-manager-filter-button image-manager-filter-button-active"
 				: "image-manager-filter-button",
 		});
-		filterBtn.onclick = () => {
+		filterBtn.onclick = async () => {
+			// 检查是否所有图片都已经检查过引用
+			const uncheckedImages = this.images.filter(img => img.references === undefined);
+			
+			if (uncheckedImages.length > 0) {
+				// 有未检查的图片，需要检查所有图片的引用
+				await this.checkReferences();
+			}
+			
 			this.showUnreferencedOnly = !this.showUnreferencedOnly;
 			this.applyFilters();
 			this.renderHeader();
@@ -208,8 +252,13 @@ export class ImageManagerView extends ItemView {
 	 * 显示文件夹输入框
 	 */
 	private showFolderInput(buttonEl: HTMLElement): void {
-		// 创建输入框容器
-		const inputContainer = buttonEl.parentElement!.createDiv("image-manager-folder-input-container");
+		const leftSection = buttonEl.parentElement!;
+		
+		// 创建输入框容器，插入到按钮位置
+		const inputContainer = leftSection.createDiv("image-manager-folder-input-container");
+		
+		// 将输入框容器插入到按钮之后、统计信息之前
+		leftSection.insertBefore(inputContainer, buttonEl.nextSibling);
 		
 		const folderInput = inputContainer.createEl("input", {
 			type: "text",
@@ -381,8 +430,25 @@ export class ImageManagerView extends ItemView {
 		const endIndex = Math.min(startIndex + this.batchSize, this.filteredImages.length);
 		const imagesToRender = this.filteredImages.slice(startIndex, endIndex);
 
-		// 渲染图片
-		imagesToRender.forEach((image) => {
+		// 使用 requestAnimationFrame 批量渲染，避免阻塞
+		requestAnimationFrame(async () => {
+			const itemElements = this.renderImageBatch(gridEl!, imagesToRender);
+			this.renderedCount = endIndex;
+			this.updateLoadMoreIndicator();
+			
+			// 渲染后立即检查这批图片的引用
+			await this.checkBatchReferences(imagesToRender, itemElements);
+		});
+	}
+
+	/**
+	 * 渲染一批图片
+	 * @returns 返回渲染的元素数组，用于后续更新引用信息
+	 */
+	private renderImageBatch(gridEl: HTMLElement, images: ImageItem[]): Array<{image: ImageItem, element: HTMLElement}> {
+		const renderedItems: Array<{image: ImageItem, element: HTMLElement}> = [];
+		
+		images.forEach((image) => {
 			const itemEl = gridEl.createDiv("image-manager-grid-item");
 
 			// 缩略图容器
@@ -417,10 +483,15 @@ export class ImageManagerView extends ItemView {
 					cls: image.displayFile.extension.toLowerCase() === "svg" ? "image-manager-svg-image" : "image-manager-thumbnail-image",
 				});
 				
-				// 设置图片源
+				// 懒加载：使用 data-src 而不是直接设置 src
 				const resourcePath = this.app.vault.getResourcePath(image.displayFile);
-				img.src = resourcePath;
+				img.setAttribute("data-src", resourcePath);
 				img.alt = image.name;
+
+				// 将图片元素加入 IntersectionObserver
+				if (this.intersectionObserver) {
+					this.intersectionObserver.observe(img);
+				}
 				
 				// 添加加载错误处理，防止循环加载
 				let loadFailed = false;
@@ -534,12 +605,12 @@ export class ImageManagerView extends ItemView {
 				e.stopPropagation();
 				this.handleDelete(image);
 			};
+			
+			// 收集渲染的元素
+			renderedItems.push({ image, element: itemEl });
 		});
-
-		this.renderedCount = endIndex;
-
-		// 更新加载更多指示器
-		this.updateLoadMoreIndicator();
+		
+		return renderedItems;
 	}
 
 	/**
@@ -607,13 +678,8 @@ export class ImageManagerView extends ItemView {
 		try {
 			this.images = await this.imageLoader.loadImages(this.selectedFolder);
 			
-			// 自动检查引用
-			if (this.images.length > 0) {
-				this.isCheckingReferences = true;
-				this.renderHeader();
-				this.images = await this.referenceChecker.checkReferences(this.images);
-				this.isCheckingReferences = false;
-			}
+			// 不自动检查引用，等用户需要时再检查
+			// 这样可以大幅提升初始化速度
 			
 			this.applyFilters();
 			this.renderHeader();
@@ -648,6 +714,68 @@ export class ImageManagerView extends ItemView {
 		} finally {
 			this.isCheckingReferences = false;
 			this.renderHeader();
+		}
+	}
+
+	/**
+	 * 检查一批图片的引用并更新显示
+	 */
+	private async checkBatchReferences(
+		images: ImageItem[],
+		elements: Array<{image: ImageItem, element: HTMLElement}>
+	): Promise<void> {
+		// 过滤出还没有检查过引用的图片
+		const needCheckImages = images.filter(img => img.references === undefined);
+		
+		if (needCheckImages.length === 0) {
+			return; // 已经检查过了，无需重复检查
+		}
+		
+		try {
+			// 批量检查引用
+			const updatedImages = await this.referenceChecker.checkReferences(needCheckImages);
+			
+			// 更新主数组中的引用信息
+			updatedImages.forEach(updatedImg => {
+				const index = this.images.findIndex(img => img.path === updatedImg.path);
+				if (index !== -1) {
+					this.images[index] = updatedImg;
+				}
+			});
+			
+			// 更新DOM显示引用信息
+			elements.forEach(({ image, element }) => {
+				const updatedImg = updatedImages.find(img => img.path === image.path);
+				if (updatedImg && updatedImg.references !== undefined) {
+					this.updateReferenceDisplay(element, updatedImg);
+				}
+			});
+		} catch (error) {
+			console.error("批量检查引用失败:", error);
+		}
+	}
+	
+	/**
+	 * 更新元素的引用显示
+	 */
+	private updateReferenceDisplay(itemEl: HTMLElement, image: ImageItem): void {
+		const thumbnailEl = itemEl.querySelector(".image-manager-thumbnail");
+		if (!thumbnailEl) return;
+		
+		// 检查是否已经有引用标签
+		const existingBadge = thumbnailEl.querySelector(".image-manager-reference-badge");
+		if (existingBadge) {
+			existingBadge.remove();
+		}
+		
+		// 添加引用标签
+		const refCount = image.referenceCount || 0;
+		const refBadge = thumbnailEl.createDiv({
+			text: refCount === 0 ? "未引用" : `${refCount} 引用`,
+			cls: "image-manager-reference-badge",
+		});
+		if (refCount > 0) {
+			refBadge.addClass("image-manager-reference-badge-has-refs");
 		}
 	}
 
@@ -706,10 +834,13 @@ export class ImageManagerView extends ItemView {
 	 * 处理预览
 	 */
 	private handlePreview(image: ImageItem): void {
+		// 从主数组中获取最新的图片数据（包含最新的引用信息）
+		const currentImage = this.images.find(img => img.path === image.path) || image;
+		
 		new ImagePreviewModal(
 			this.app,
-			image,
-			image.references || [],
+			currentImage,
+			currentImage.references || [],
 			(img) => this.app.vault.getResourcePath(img.displayFile),
 			(filePath) => this.fileOperations.openReferenceFile(filePath)
 		).open();
@@ -843,7 +974,7 @@ export class ImageManagerView extends ItemView {
 	private async saveLastSelectedFolder(): Promise<void> {
 		try {
 			// 直接使用 Obsidian 的数据持久化 API
-			const plugin = (this.app as any).plugins?.plugins?.["albus-figure-manager"];
+			const plugin = (this.app as any).plugins?.plugins?.["albus-imagine"];
 			if (plugin) {
 				const data = await plugin.loadData() || {};
 				if (!data.imageManager) {

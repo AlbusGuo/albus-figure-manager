@@ -246,17 +246,17 @@ export class ImageManagerModal extends Modal {
 	 */
 	private async saveLastSelectedFolder(): Promise<void> {
 		try {
-			// 直接使用 Obsidian 的数据持久化 API
-			const plugin = (this.app as any).plugins?.plugins?.["albus-figure-manager"];
+			const plugin = (this.app as any).plugins?.plugins?.["albus-imagine"];
 			if (plugin) {
-				const data = await plugin.loadData() || {};
-				if (!data.imageManager) {
-					data.imageManager = {};
+				// 直接更新 settings 对象并保存
+				if (!plugin.settings.imageManager) {
+					plugin.settings.imageManager = {};
 				}
-				data.imageManager.lastSelectedFolder = this.selectedFolder;
-				await plugin.saveData(data);
-				// 更新内存中的设置
 				plugin.settings.imageManager.lastSelectedFolder = this.selectedFolder;
+				await plugin.saveSettings();
+				console.log("已保存文件夹选择:", this.selectedFolder);
+			} else {
+				console.error("无法获取插件实例");
 			}
 		} catch (error) {
 			console.error("保存文件夹选择失败:", error);
