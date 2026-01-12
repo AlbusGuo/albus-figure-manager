@@ -3,19 +3,10 @@
  */
 
 import { App, Notice, TFile, FileSystemAdapter } from "obsidian";
-import { ImageItem, CustomFileTypeConfig, FileOpenMode } from "../types/image-manager.types";
+import { ImageItem, CustomFileTypeConfig } from "../types/image-manager.types";
 
 export class FileOperationService {
-	private fileOpenModes: Record<string, FileOpenMode> = {};
-
 	constructor(private app: App) {}
-
-	/**
-	 * 设置文件打开方式配置
-	 */
-	setFileOpenModes(modes: Record<string, FileOpenMode>): void {
-		this.fileOpenModes = modes || {};
-	}
 
 	/**
 	 * 打开文件
@@ -27,36 +18,9 @@ export class FileOperationService {
 		
 		if (!targetFile) return;
 
-		// 获取文件扩展名
-		const extension = targetFile.extension.toLowerCase();
-		
-		// 检查是否配置为外部打开
-		const openMode = this.fileOpenModes[extension] || "internal";
-		
-		if (openMode === "external") {
-			// 使用系统默认应用打开
-			try {
-				const adapter = this.app.vault.adapter;
-				if (adapter instanceof FileSystemAdapter) {
-					// @ts-ignore - 使用 Electron shell API
-					const { shell } = require('electron');
-					const basePath = adapter.getBasePath();
-					const fullPath = `${basePath}/${targetFile.path}`;
-					const result = await shell.openPath(fullPath);
-					if (result) {
-						new Notice(`无法打开文件: ${result}`);
-					}
-				} else {
-					new Notice("当前环境不支持外部打开文件（仅桌面版支持）");
-				}
-			} catch (error) {
-				new Notice(`无法使用外部应用打开文件: ${error.message}`);
-			}
-		} else {
-			// 在 Obsidian 内部打开
-			const leaf = this.app.workspace.getLeaf('tab');
-			await leaf.openFile(targetFile);
-		}
+		// 在 Obsidian 内部打开
+		const leaf = this.app.workspace.getLeaf('tab');
+		await leaf.openFile(targetFile);
 	}
 
 	/**

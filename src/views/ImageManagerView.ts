@@ -64,7 +64,6 @@ export class ImageManagerView extends ItemView {
 		this.imageLoader.setCustomFileTypes(settings.customFileTypes || []);
 		this.referenceChecker = new ReferenceCheckService(this.app);
 		this.fileOperations = new FileOperationService(this.app);
-		this.fileOperations.setFileOpenModes(settings.fileOpenModes || {});
 	}
 
 	getViewType(): string {
@@ -134,7 +133,6 @@ export class ImageManagerView extends ItemView {
 		// 优先使用上次选择的文件夹，否则使用默认文件夹
 		this.selectedFolder = settings.lastSelectedFolder ?? settings.folderPath ?? "";
 		this.imageLoader.setCustomFileTypes(settings.customFileTypes || []);
-		this.fileOperations.setFileOpenModes(settings.fileOpenModes || {});
 		// 重新加载图片以应用新设置
 		this.loadImages();
 	}

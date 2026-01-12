@@ -64,11 +64,6 @@ export interface CustomFileTypeConfig {
 }
 
 /**
- * 文件打开方式
- */
-export type FileOpenMode = "internal" | "external";
-
-/**
  * 图片管理器设置
  */
 export interface ImageManagerSettings {
@@ -86,8 +81,6 @@ export interface ImageManagerSettings {
 	confirmDelete?: boolean;
 	/** 自定义文件类型配置 */
 	customFileTypes?: CustomFileTypeConfig[];
-	/** 文件打开方式配置 - key是文件扩展名，value是打开方式 */
-	fileOpenModes?: Record<string, FileOpenMode>;
 }
 
 /**

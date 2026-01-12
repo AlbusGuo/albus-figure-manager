@@ -1,5 +1,5 @@
 import { Plugin, WorkspaceLeaf } from "obsidian";
-import { PluginSettingTab } from "./settings/PluginSettingTab";
+import { NativePluginSettingTab } from "./settings/NativePluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
 import { IPluginSettings } from "./types/types";
 import { ImageManagerView, IMAGE_MANAGER_VIEW_TYPE } from "./views/ImageManagerView";
@@ -52,7 +52,7 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 		});
 
 		// 添加设置选项卡
-		this.addSettingTab(new PluginSettingTab(this));
+		this.addSettingTab(new NativePluginSettingTab(this));
 
 		// 监听新窗口打开事件（用于图片查看器）
 		this.registerEvent(

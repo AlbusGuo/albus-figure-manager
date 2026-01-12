@@ -25,6 +25,7 @@ export interface IPluginSettings {
 	imageManager?: ImageManagerSettings;
 	imageResize?: ImageResizeSettings;
 	imageViewer?: ImageViewerSettings;
+	settingsTab?: "IMAGE_MANAGER" | "IMAGE_RESIZE" | "IMAGE_VIEWER";
 }
 
 export const DEFAULT_IMAGE_RESIZE_SETTINGS: ImageResizeSettings = {
@@ -46,8 +47,8 @@ export const DEFAULT_SETTINGS: IPluginSettings = {
 		defaultFilterUnreferenced: false,
 		confirmDelete: true,
 		customFileTypes: [],
-		fileOpenModes: {},
 	},
 	imageResize: DEFAULT_IMAGE_RESIZE_SETTINGS,
 	imageViewer: DEFAULT_IMAGE_VIEWER_SETTINGS,
+	settingsTab: "IMAGE_MANAGER",
 };

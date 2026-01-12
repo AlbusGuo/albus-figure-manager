@@ -149,4 +149,20 @@ export default class SettingsStore {
 		// 使用 updateSettings 方法更新设置
 		await this.updateSettings(newSettings);
 	}
+
+	/**
+	 * 设置当前激活的设置标签页
+	 */
+	async setSettingsTab(tab: "IMAGE_MANAGER" | "IMAGE_RESIZE" | "IMAGE_VIEWER") {
+		this.#plugin.settings.settingsTab = tab;
+		await this.#plugin.saveSettings();
+		this.#notifyStoreSubscribers();
+	}
+
+	/**
+	 * 获取当前激活的设置标签页
+	 */
+	get settingsTab() {
+		return this.#plugin.settings.settingsTab || "IMAGE_MANAGER";
+	}
 }
