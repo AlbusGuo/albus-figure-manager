@@ -1,6 +1,6 @@
 {
 	"name": "albus-imagine",
-	"version": "1.2.5",
+	"version": "1.3.0",
 	"description": "A powerful image management plugin for Obsidian with reference checking, searching, and file operations",
 	"main": "main.js",
 	"scripts": {

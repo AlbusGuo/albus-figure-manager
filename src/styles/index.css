@@ -6,6 +6,7 @@
 @import "./additional-components.css";
 @import "./image-manager.css";
 @import "./image-preview-modal.css";
+@import "./image-picker.css";
 @import "./rename-modal.css";
 @import "./delete-confirm-modal.css";
 @import "./image-resizer.css";

@@ -12,15 +12,12 @@ export class FileOperationService {
 	 * 打开文件
 	 */
 	async openFile(image: ImageItem): Promise<void> {
-		const targetFile = (image.isAgx || image.isCustomType)
-			? image.originalFile
-			: image.displayFile;
-		
-		if (!targetFile) return;
-
-		// 在 Obsidian 内部打开
-		const leaf = this.app.workspace.getLeaf('tab');
-		await leaf.openFile(targetFile);
+		// 使用 Obsidian 默认方式打开文件
+		await this.app.workspace.openLinkText(
+			image.originalFile.path,
+			'',
+			true
+		);
 	}
 
 	/**
@@ -33,17 +30,6 @@ export class FileOperationService {
 				image.originalFile,
 				newPath
 			);
-
-			// 如果是AGX文件，同时重命名对应的SVG文件
-			if (image.isAgx) {
-				const svgPath = image.path.replace(/\.agx$/i, ".svg");
-				const svgFile =
-					this.app.vault.getAbstractFileByPath(svgPath);
-				if (svgFile instanceof TFile) {
-					const newSvgPath = newPath.replace(/\.agx$/i, ".svg");
-					await this.app.fileManager.renameFile(svgFile, newSvgPath);
-				}
-			}
 
 			// 如果是自定义文件类型，同时重命名封面文件
 			if (image.isCustomType && image.customTypeConfig) {
@@ -71,16 +57,6 @@ export class FileOperationService {
 		try {
 			await this.app.vault.trash(image.originalFile, false);
 
-			// 如果是AGX文件，同时删除对应的SVG文件
-			if (image.isAgx) {
-				const svgPath = image.path.replace(/\.agx$/i, ".svg");
-				const svgFile =
-					this.app.vault.getAbstractFileByPath(svgPath);
-				if (svgFile instanceof TFile) {
-					await this.app.vault.trash(svgFile, false);
-				}
-			}
-
 			// 如果是自定义文件类型，同时删除封面文件
 			if (image.isCustomType && image.customTypeConfig) {
 				const coverPath = this.getCoverPath(image.path, image.customTypeConfig);
@@ -105,9 +81,7 @@ export class FileOperationService {
 	 * 获取删除确认的额外提示信息
 	 */
 	getDeleteExtraMessage(image: ImageItem): string {
-		if (image.isAgx) {
-			return "同时会删除对应的 SVG 封面文件";
-		} else if (image.isCustomType && image.customTypeConfig) {
+		if (image.isCustomType && image.customTypeConfig) {
 			return `同时会删除对应的 ${image.customTypeConfig.coverExtension.toUpperCase()} 封面文件`;
 		}
 		return "";

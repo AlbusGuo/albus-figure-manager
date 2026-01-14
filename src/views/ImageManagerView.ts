@@ -530,9 +530,9 @@ export class ImageManagerView extends ItemView {
 				text: image.originalFile.extension.toUpperCase(),
 				cls: "image-manager-format-badge",
 			});
-			// AGX 和自定义类型使用强调色，普通图片使用灰色
+			// 自定义类型使用强调色，普通图片使用灰色
 			formatBadge.addClass(
-				image.isAgx || image.isCustomType
+				image.isCustomType
 					? "image-manager-agx-format"
 					: "image-manager-other-format"
 			);

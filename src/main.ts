@@ -3,6 +3,7 @@ import { NativePluginSettingTab } from "./settings/NativePluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
 import { IPluginSettings } from "./types/types";
 import { ImageManagerView, IMAGE_MANAGER_VIEW_TYPE } from "./views/ImageManagerView";
+import { ImagePickerModal } from "./views/ImagePickerModal";
 import { ResizeHandler } from "./handlers";
 import { ImageViewerManager } from "./views/ImageViewerManager";
 import "./styles";
@@ -51,6 +52,15 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 			name: "打开图片管理器",
 			callback: () => {
 				this.openImageManager();
+			},
+		});
+
+		// 添加命令 - 插入图片
+		this.addCommand({
+			id: "insert-image",
+			name: "插入图片",
+			callback: () => {
+				this.openImagePicker();
 			},
 		});
 
@@ -123,6 +133,14 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 				workspace.revealLeaf(leaf);
 			}
 		}
+	}
+
+	/**
+	 * 打开图片选择器
+	 */
+	openImagePicker(): void {
+		const modal = new ImagePickerModal(this.app, this.settings.imageManager || {});
+		modal.open();
 	}
 
 	onunload() {

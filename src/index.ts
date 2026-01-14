@@ -13,15 +13,8 @@ export { ImageLoadCache } from "./models/ImageLoadCache";
 export { ImageLoaderService } from "./services/ImageLoaderService";
 export { ReferenceCheckService } from "./services/ReferenceCheckService";
 export { FileOperationService } from "./services/FileOperationService";
-export { ImageFilterService } from "./services/ImageFilterService";
-
-// Components
-export { ImageGridComponent } from "./components/ImageGridComponent";
-export { SearchSortBarComponent } from "./components/SearchSortBarComponent";
-export { HeaderComponent } from "./components/HeaderComponent";
 
 // Views
-export { ImageManagerModal } from "./views/ImageManagerModal";
 export { ImagePreviewModal } from "./views/ImagePreviewModal";
 export { RenameModal } from "./views/RenameModal";
 

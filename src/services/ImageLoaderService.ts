@@ -31,17 +31,6 @@ export class ImageLoaderService {
 	): Promise<ImageItem[]> {
 		const allFiles = this.app.vault.getFiles();
 
-		// 找出所有AGX文件及其对应的SVG文件
-		const agxFiles = allFiles.filter(
-			(file) => file.extension.toLowerCase() === "agx"
-		);
-
-		const usedSvgPaths = new Set<string>();
-		agxFiles.forEach((agxFile) => {
-			const svgPath = agxFile.path.replace(/\.agx$/i, ".svg");
-			usedSvgPaths.add(svgPath);
-		});
-
 		// 找出所有自定义文件类型及其对应的封面文件
 		const usedCoverPaths = new Set<string>();
 		this.customFileTypes.forEach((config) => {
@@ -75,11 +64,6 @@ export class ImageLoaderService {
 				(config) => config.fileExtension.toLowerCase() === extension
 			);
 
-			// 如果是SVG文件且已被AGX使用，则跳过
-			if (extension === "svg" && usedSvgPaths.has(file.path)) {
-				return false;
-			}
-
 			// 如果是封面文件且已被自定义类型使用，则跳过
 			if (usedCoverPaths.has(file.path)) {
 				return false;
@@ -108,36 +92,24 @@ export class ImageLoaderService {
 	 */
 	private async processImageFile(file: TFile): Promise<ImageItem> {
 		const extension = file.extension.toLowerCase();
-		const isAgx = extension === "agx";
 		let displayFile = file;
 		let isCustomType = false;
 		let customTypeConfig: CustomFileTypeConfig | undefined = undefined;
 		let coverMissing = false;
 
-		// 对于AGX文件，尝试找到对应的SVG文件
-		if (isAgx) {
-			const svgPath = file.path.replace(/\.agx$/i, ".svg");
-			const svgFile = this.app.vault.getAbstractFileByPath(svgPath);
-			if (svgFile instanceof TFile) {
-				displayFile = svgFile;
+		// 检查是否为自定义文件类型
+		const matchedConfig = this.customFileTypes.find(
+			(config) => config.fileExtension.toLowerCase() === extension
+		);
+		if (matchedConfig) {
+			isCustomType = true;
+			customTypeConfig = matchedConfig;
+			const coverPath = this.getCoverPath(file.path, matchedConfig);
+			const coverFile = this.app.vault.getAbstractFileByPath(coverPath);
+			if (coverFile instanceof TFile) {
+				displayFile = coverFile;
 			} else {
 				coverMissing = true;
-			}
-		} else {
-			// 检查是否为自定义文件类型
-			const matchedConfig = this.customFileTypes.find(
-				(config) => config.fileExtension.toLowerCase() === extension
-			);
-			if (matchedConfig) {
-				isCustomType = true;
-				customTypeConfig = matchedConfig;
-				const coverPath = this.getCoverPath(file.path, matchedConfig);
-				const coverFile = this.app.vault.getAbstractFileByPath(coverPath);
-				if (coverFile instanceof TFile) {
-					displayFile = coverFile;
-				} else {
-					coverMissing = true;
-				}
 			}
 		}
 
@@ -146,7 +118,6 @@ export class ImageLoaderService {
 			path: file.path,
 			originalFile: file,
 			displayFile: displayFile,
-			isAgx: isAgx,
 			isCustomType: isCustomType,
 			customTypeConfig: customTypeConfig,
 			coverMissing: coverMissing,

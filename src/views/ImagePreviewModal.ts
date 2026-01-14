@@ -76,7 +76,7 @@ export class ImagePreviewModal extends Modal {
 			text: extension,
 		});
 		formatTag.addClass(
-			this.image.isAgx || this.image.isCustomType
+			this.image.isCustomType
 				? "image-manager-agx-format-tag"
 				: "image-manager-other-format-tag"
 		);
@@ -91,15 +91,6 @@ export class ImagePreviewModal extends Modal {
 				text: `${this.image.referenceCount} 个引用`,
 			});
 		}
-
-		// 缩放提示
-		const hintEl = toolbar.createDiv({
-			cls: "image-manager-preview-hint",
-		});
-		hintEl.createSpan({
-			text: "💡 使用滚轮缩放图片，点击图片重置",
-			cls: "image-manager-zoom-hint",
-		});
 	}
 
 	/**

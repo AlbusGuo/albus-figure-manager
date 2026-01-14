@@ -70,16 +70,9 @@ export class ReferenceCheckService {
 	): Promise<ReferenceInfo[]> {
 		const references: ReferenceInfo[] = [];
 
-		// 对于AGX文件，使用对应的SVG文件来检查引用
 		// 对于自定义文件类型，使用对应的封面文件来检查引用
 		let targetFile = imageItem.originalFile;
-		if (imageItem.isAgx) {
-			const svgPath = imageItem.path.replace(/\.agx$/i, ".svg");
-			const svgFile = this.app.vault.getAbstractFileByPath(svgPath);
-			if (svgFile instanceof TFile) {
-				targetFile = svgFile;
-			}
-		} else if (imageItem.isCustomType && imageItem.displayFile !== imageItem.originalFile) {
+		if (imageItem.isCustomType && imageItem.displayFile !== imageItem.originalFile) {
 			// 对于自定义文件类型，使用displayFile（封面文件）来检查引用
 			targetFile = imageItem.displayFile;
 		}

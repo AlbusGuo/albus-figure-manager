@@ -14,15 +14,13 @@ export interface ImageItem {
 	path: string;
 	/** 原始文件对象 */
 	originalFile: TFile;
-	/** 显示用的文件对象（对于AGX文件或自定义文件类型，这是对应的封面文件） */
+	/** 显示用的文件对象（对于自定义文件类型，这是对应的封面文件） */
 	displayFile: TFile;
-	/** 是否为AGX文件 */
-	isAgx: boolean;
 	/** 是否为自定义文件类型 */
 	isCustomType: boolean;
 	/** 自定义文件类型的配置（如果是自定义类型） */
 	customTypeConfig?: CustomFileTypeConfig;
-	/** 封面文件是否缺失（仅对AGX或自定义类型有效） */
+	/** 封面文件是否缺失（仅对自定义类型有效） */
 	coverMissing?: boolean;
 	/** 文件统计信息 */
 	stat: {
@@ -55,7 +53,7 @@ export interface ReferenceInfo {
  * 自定义文件类型配置
  */
 export interface CustomFileTypeConfig {
-	/** 自定义文件的扩展名（如 "agx"） */
+	/** 自定义文件的扩展名 */
 	fileExtension: string;
 	/** 封面文件的扩展名（如 "svg", "png"） */
 	coverExtension: string;
@@ -114,7 +112,12 @@ export const SUPPORTED_IMAGE_EXTENSIONS = [
 	"bmp",
 	"webp",
 	"svg",
-	"agx",
+	"ico",
+	"tif",
+	"tiff",
+	"avif",
+	"heic",
+	"heif",
 ] as const;
 
 export type ImageExtension = (typeof SUPPORTED_IMAGE_EXTENSIONS)[number];
