@@ -2,9 +2,9 @@
 
 一个功能全面的 Obsidian 图片管理插件，提供图片管理、快速插入、拖拽调整、查看预览等多种功能。
 
-[![版本](https://img.shields.io/github/v/release/AlbusGuo/albus-figure-manager)](https://github.com/AlbusGuo/albus-figure-manager/releases)
-[![下载](https://img.shields.io/github/downloads/AlbusGuo/albus-figure-manager/total)](https://github.com/AlbusGuo/albus-figure-manager/releases)
-[![许可证](https://img.shields.io/github/license/AlbusGuo/albus-figure-manager)](LICENSE)
+[![版本](https://img.shields.io/github/v/release/AlbusGuo/albus-imagine)](https://github.com/AlbusGuo/albus-imagine/releases)
+[![下载](https://img.shields.io/github/downloads/AlbusGuo/albus-imagine/total)](https://github.com/AlbusGuo/albus-imagine/releases)
+[![许可证](https://img.shields.io/github/license/AlbusGuo/albus-imagine)](LICENSE)
 
 > 本项目部分功能参考插件 [Image Toolkit](https://github.com/sissilab/obsidian-image-toolkit) 与 [AttachFlow](https://github.com/Yaozhuwa/AttachFlow)，感谢社区插件的开源分享！
 
@@ -89,7 +89,7 @@
 4. 点击安装并启用
 
 #### 手动安装
-1. 下载 [最新版本](https://github.com/AlbusGuo/albus-figure-manager/releases)
+1. 下载 [最新版本](https://github.com/AlbusGuo/albus-imagine/releases)
 2. 解压到 `.obsidian/plugins/albus-imagine/` 文件夹
 3. 重启 Obsidian
 4. 在设置中启用插件
