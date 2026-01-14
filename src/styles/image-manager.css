@@ -397,6 +397,12 @@
 	opacity: 0.9;
 }
 
+/* 禁用SVG反色 */
+.theme-dark.afm-no-svg-invert .image-manager-svg-image {
+	filter: none !important;
+	opacity: 1 !important;
+}
+
 /* 封面缺失占位符 */
 .image-manager-cover-missing {
 	display: flex;

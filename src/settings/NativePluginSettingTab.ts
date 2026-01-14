@@ -182,6 +182,26 @@ export class NativePluginSettingTab extends PluginSettingTab {
 				});
 		});
 
+		// SVG图片反色处理
+		group.addSetting((setting) => {
+			setting
+				.setName('深色模式下SVG图片反色')
+				.setDesc('在深色主题下对SVG图片进行反色处理，使其更适配深色背景')
+				.addToggle((toggle) => {
+					toggle
+						.setValue(this.plugin.settings.imageManager?.invertSvgInDarkMode !== false)
+						.onChange(async (value) => {
+							if (!this.plugin.settings.imageManager) {
+								this.plugin.settings.imageManager = {};
+							}
+							this.plugin.settings.imageManager.invertSvgInDarkMode = value;
+							await this.plugin.saveSettings();
+							// 更新CSS类
+							this.updateSvgInvertClass();
+						});
+				});
+		});
+
 		// 自定义文件类型
 		this.displayCustomFileTypes(containerEl);
 	}
@@ -403,5 +423,17 @@ export class NativePluginSettingTab extends PluginSettingTab {
 						});
 				});
 		});
+	}
+
+	/**
+	 * 更新SVG反色CSS类
+	 */
+	private updateSvgInvertClass(): void {
+		const shouldInvert = this.plugin.settings.imageManager?.invertSvgInDarkMode !== false;
+		if (shouldInvert) {
+			document.body.removeClass('afm-no-svg-invert');
+		} else {
+			document.body.addClass('afm-no-svg-invert');
+		}
 	}
 }

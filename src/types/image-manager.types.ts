@@ -79,6 +79,8 @@ export interface ImageManagerSettings {
 	defaultFilterUnreferenced?: boolean;
 	/** 删除前确认 */
 	confirmDelete?: boolean;
+	/** 深色模式下SVG图片反色处理 */
+	invertSvgInDarkMode?: boolean;
 	/** 自定义文件类型配置 */
 	customFileTypes?: CustomFileTypeConfig[];
 }

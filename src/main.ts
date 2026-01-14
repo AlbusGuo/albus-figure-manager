@@ -16,6 +16,9 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 	async onload() {
 		await this.settingsStore.loadSettings();
 
+		// 初始化SVG反色CSS类
+		this.updateSvgInvertClass();
+
 		// 初始化图片调整大小处理器
 		if (this.settings.imageResize?.dragResize) {
 			this.initializeResizeHandler();
@@ -136,6 +139,9 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 		
+		// 更新SVG反色CSS类
+		this.updateSvgInvertClass();
+		
 		// 更新调整大小处理器设置
 		if (this.settings.imageResize?.dragResize) {
 			if (!this.resizeHandler) {
@@ -176,5 +182,17 @@ export default class AlbusFigureManagerPlugin extends Plugin {
 				view.updateSettings(this.settings.imageManager || {});
 			}
 		});
+	}
+
+	/**
+	 * 更新SVG反色CSS类
+	 */
+	private updateSvgInvertClass(): void {
+		const shouldInvert = this.settings.imageManager?.invertSvgInDarkMode !== false;
+		if (shouldInvert) {
+			document.body.removeClass('afm-no-svg-invert');
+		} else {
+			document.body.addClass('afm-no-svg-invert');
+		}
 	}
 }

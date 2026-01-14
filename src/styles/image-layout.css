@@ -10,6 +10,15 @@
   filter: invert(1) hue-rotate(180deg) !important;
 }
 
+/* 禁用SVG反色时，不对dark参数生效 */
+.afm-no-svg-invert.theme-dark img[alt*="dark"] {
+  filter: none !important;
+}
+
+.afm-no-svg-invert.theme-dark .image-embed[src*="#dark"] img {
+  filter: none !important;
+}
+
 
 /* ========================================
 图片排版位置

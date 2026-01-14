@@ -46,6 +46,7 @@ export const DEFAULT_SETTINGS: IPluginSettings = {
 		showModifiedTime: true,
 		defaultFilterUnreferenced: false,
 		confirmDelete: true,
+		invertSvgInDarkMode: true,
 		customFileTypes: [],
 	},
 	imageResize: DEFAULT_IMAGE_RESIZE_SETTINGS,
